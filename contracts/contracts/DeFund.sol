@@ -39,7 +39,6 @@ contract DeFund is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownable {
 
     /* Deposit funds to the contract */
     function depositFunds(uint _amount, address _tokenAddress) external payable {
-        // TODO reentrancy
         require(_amount > 0, "Cannot deposit 0");
         if (_tokenAddress == address(0)) {
             // ETH deposit
@@ -60,14 +59,14 @@ contract DeFund is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownable {
         uint currentBalance = s_userBalances[msg.sender][_tokenAddress];
         require(_amount <= currentBalance, "Sorry, can't withdraw more than you have in your account :)");
 
+        s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
+
         if (_tokenAddress == address(0)) {
             payable(msg.sender).transfer(_amount);
         } else {
             // TODO
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
         }
-
-        s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
     }
 
     /* Add a new token to the list allowed for deposits and withdrawals */
