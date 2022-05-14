@@ -1,90 +1,85 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity ^0.8.7;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
 import "hardhat/console.sol";
+import "./DeFundFactory.sol";
 
-contract DeFund is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownable {
-    /* Types */
-    enum FundraiserType {
-        ONE_TIME_DONATION,
-        RECURRING_DONATION,
-        LOAN
-    }
-
-    enum FundraiserStatus {
-        ACTIVE,
-        FULLY_FUNDED,
-        REPAYING,
-        REPAID,
-        CLOSED
-    }
-
-    enum FundraiserCategory {
-        MEDICAL,
-        EMERGENCY,
-        FINANCIAL_EMERGENCY,
-        COMMUNITY,
-        ANIMALS,
-        EDUCATION
-    }
+contract DeFund {
+    /* Immutable state variables */
+    uint public immutable i_id;
+    address public immutable i_owner;
+    DeFundFactory.FundraiserType public immutable i_type;
+    DeFundFactory.FundraiserCategory public immutable i_category;
+    uint public immutable i_endDate;
+    DeFundFactory private immutable i_factory;
 
     /* State variables */
-    address[] public s_allowedERC20Tokens;
-    mapping(address => mapping(address => uint)) public s_userBalances;
+    string[] public s_descriptions;
+    string public s_name;
+    DeFundFactory.FundraiserStatus public s_status;
+    mapping(address => uint) public s_balances;
+    mapping(address => mapping(address => uint)) public s_donors;
 
-    // TODO fundraiser goal is always in USD, it auto-closes once the threshold is reached (use keepers and price feeds)
+    /* Create a new instance of a fundraiser */
+    constructor(
+        uint _id,
+        address _owner,
+        DeFundFactory.FundraiserType _type,
+        DeFundFactory.FundraiserCategory _category,
+        uint _endDate,
+        string memory _name,
+        string memory _initialDescription
+    ) {
+        i_id = _id;
+        i_owner = _owner;
+        i_type = _type;
+        i_category = _category;
+        i_endDate = _endDate;
+        s_name = _name;
+        s_descriptions.push(_initialDescription);
+        i_factory = DeFundFactory(msg.sender);
+        s_status = DeFundFactory.FundraiserStatus.ACTIVE;
+    }
 
-    /* Deposit funds to the contract */
-    function depositFunds(uint _amount, address _tokenAddress) external payable {
+    /* Donate funds to the fundraiser */
+    function makeDonation(uint _amount, address _tokenAddress) external payable {
+        // TODO check status - should not accept donations if status != active
         require(_amount > 0, "Cannot deposit 0");
         if (_tokenAddress == address(0)) {
             // ETH deposit
             require(msg.value == _amount);
-            s_userBalances[msg.sender][address(0)] = s_userBalances[msg.sender][address(0)] + _amount;
+            s_donors[msg.sender][address(0)] = s_donors[msg.sender][address(0)] + _amount;
+            s_balances[address(0)] = s_balances[address(0)] + _amount;
         } else {
             // ERC20 deposit
-            require(isTokenAllowed(_tokenAddress), "Sorry, we don't support this token yet");
-            // TODO hmm doesn't seem to work
             IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
-            s_userBalances[msg.sender][_tokenAddress] = s_userBalances[msg.sender][_tokenAddress] + _amount;
+            s_donors[msg.sender][_tokenAddress] = s_donors[msg.sender][_tokenAddress] + _amount;
+            s_balances[_tokenAddress] = s_balances[_tokenAddress] + _amount;
         }
+
+        // TODO emit
     }
 
     /* Withdraw funds from the contract */
     function withdrawFunds(uint _amount, address _tokenAddress) public {
+        require(msg.sender == i_owner, "You must be the owner of the fundraiser to withdraw");
         require(_amount > 0, "Cannot withdraw 0");
-        uint currentBalance = s_userBalances[msg.sender][_tokenAddress];
-        require(_amount <= currentBalance, "Sorry, can't withdraw more than you have in your account :)");
+        uint currentBalance = s_balances[_tokenAddress];
+        require(_amount <= currentBalance, "Sorry, can't withdraw more than total donations");
 
-        s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
+        s_balances[_tokenAddress] = currentBalance - _amount;
 
         if (_tokenAddress == address(0)) {
             payable(msg.sender).transfer(_amount);
         } else {
-            // TODO
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
         }
+
+        // TODO emit
     }
 
-    /* Add a new token to the list allowed for deposits and withdrawals */
-    function allowToken(address _tokenAddress) public onlyOwner {
-        s_allowedERC20Tokens.push(_tokenAddress);
-    }
+    // TODO update description
+    // TODO recurring
+    // TODO close one time when goal is reached (maybe control this from factory?)
 
-    /* Check if deposited token is supported */
-    function isTokenAllowed(address _tokenAddress) public view returns (bool) {
-        for (
-            uint256 idx = 0;
-            idx < s_allowedERC20Tokens.length;
-            idx++
-        ) {
-            if (s_allowedERC20Tokens[idx] == _tokenAddress) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
