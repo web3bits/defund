@@ -8,6 +8,8 @@ Folder structure:
 
 ## How to deploy to Kovan testnet
 
+All commands in the `/contracts` folder. 
+
 ### 1. Config
 Copy `.env.example` to `.env` and fill the values.
 
@@ -24,7 +26,6 @@ yarn install
 ### 3. Run deploy script
 
 ```shell
-cd contracts
 npx hardhat run scripts/deploy.ts --network kovan
 ```
 
