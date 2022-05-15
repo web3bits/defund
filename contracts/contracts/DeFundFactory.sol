@@ -7,6 +7,10 @@ import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
 import "hardhat/console.sol";
 import "./DeFund.sol";
 
+    error DeFundFactory__deposit__zero_deposit();
+    error DeFundFactory__deposit__less_than_declared();
+    error DeFundFactory__deposit__token_not_allowed();
+
 contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownable {
     /* Types */
     enum FundraiserType {
@@ -43,14 +47,22 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
 
     /* Deposit funds to the contract */
     function depositFunds(uint _amount, address _tokenAddress) external payable {
-        require(_amount > 0, "Cannot deposit 0");
+        if (_amount == 0) {
+            revert DeFundFactory__deposit__zero_deposit();
+        }
         if (_tokenAddress == address(0)) {
             // ETH deposit
-            require(msg.value == _amount);
+            if (msg.value < _amount) {
+                revert DeFundFactory__deposit__less_than_declared();
+            }
+
             s_userBalances[msg.sender][address(0)] = s_userBalances[msg.sender][address(0)] + _amount;
         } else {
             // ERC20 deposit
-            require(isTokenAllowed(_tokenAddress), "Sorry, we don't support this token yet");
+            if (!isTokenAllowed(_tokenAddress)) {
+                revert DeFundFactory__deposit__token_not_allowed();
+            }
+
             // TODO test with approve beforehand...
             IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
             s_userBalances[msg.sender][_tokenAddress] = s_userBalances[msg.sender][_tokenAddress] + _amount;
