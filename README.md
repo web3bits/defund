@@ -4,7 +4,8 @@
 
 Folder structure:
 - `contracts` contains Solidity smart contracts and tooling to develop, test and deploy it (Hardhat)
-- `frontend` contains web3 dApp to interact with the contracts 
+- `frontend` contains web3 dApp to interact with the contracts
+- `infra` contains AWS CDK stack definition for deployments
 
 ## How to deploy to Kovan testnet
 
