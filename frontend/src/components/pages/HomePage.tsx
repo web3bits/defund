@@ -8,7 +8,7 @@ export const HomePage = () => {
         HOME PAGE
       </Typography>
       <Typography variant="h5" align="center" color="text.secondary" component="p">
-        Wow it works
+        Wow it works?
       </Typography>
     </>
   );

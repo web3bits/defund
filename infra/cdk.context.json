@@ -1,5 +1,9 @@
 {
   "acknowledged-issue-numbers": [
     19836
-  ]
+  ],
+  "hosted-zone:account=007941041720:domainName=defund.link:region=us-east-2": {
+    "Id": "/hostedzone/Z0256558QHNHMQ0I279X",
+    "Name": "defund.link."
+  }
 }
