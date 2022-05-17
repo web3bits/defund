@@ -3,6 +3,7 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import * as React from "react";
+import { UserInfo } from "./UserInfo";
 
 export const Navigation = () => {
   return (
@@ -19,9 +20,7 @@ export const Navigation = () => {
             Fundraiser
           </Link>
         </nav>
-        <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-          Login
-        </Button>
+        <UserInfo />
       </Toolbar>
     </AppBar>
   );

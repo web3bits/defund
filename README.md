@@ -7,7 +7,7 @@ Folder structure:
 - `frontend` contains web3 dApp to interact with the contracts
 - `infra` contains AWS CDK stack definition for deployments
 
-## How to deploy to Kovan testnet
+## How to deploy contracts to Kovan testnet
 
 All commands in the `/contracts` folder. 
 
@@ -37,3 +37,19 @@ Copy deployed address from step 3 and run:
 ```shell
 npx hardhat verify --network kovan <DEPLOYED_CONTRACT_ADDRESS>
 ```
+
+## Frontend
+
+### Install
+
+```shell
+cd frontend
+yarn install
+cp .env.example .env
+```
+
+Then fill out values in `.env` file.
+
+### Dev
+
+`yarn start`
