@@ -1,6 +1,6 @@
 import * as React from "react";
 import Typography from "@mui/material/Typography";
-import * as factoryAbi from "../../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
+import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { Button } from "@mui/material";
 import { useWeb3Contract } from "react-moralis";
 
