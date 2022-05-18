@@ -20,6 +20,7 @@ interface IGlobalContext {
   setLoading: (value: boolean) => void;
   addNotification: (type: NotificationType, message: string, header?: string) => void;
   closeNotification: (id: string) => void;
+  notifications: SystemNotification[];
 }
 
 export const defaultGlobalContext: IGlobalContext = {
@@ -27,6 +28,7 @@ export const defaultGlobalContext: IGlobalContext = {
   setLoading: () => {},
   addNotification: () => {},
   closeNotification: () => {},
+  notifications: [],
 };
 
 export const GlobalContext = createContext<IGlobalContext>(defaultGlobalContext);
@@ -66,6 +68,7 @@ export const GlobalContextProvider: React.FC = ({ children }) => {
         setLoading,
         addNotification,
         closeNotification,
+        notifications,
       }}
     >
       {children}

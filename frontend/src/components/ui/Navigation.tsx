@@ -1,4 +1,4 @@
-import { AppBar, Button, Toolbar } from "@mui/material";
+import { AppBar, Toolbar } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
