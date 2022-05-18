@@ -14,7 +14,7 @@ export const Layout = () => {
       </Backdrop>
       <Navigation />
       <Notifications />
-      <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
+      <Container disableGutters maxWidth="lg" component="main" sx={{ py: 3 }}>
         <Outlet />
       </Container>
     </>

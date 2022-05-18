@@ -16,8 +16,8 @@ export const Navigation = () => {
           <Link component={RouterLink} variant="button" color="text.primary" to="/" sx={{ my: 1, mx: 1.5 }}>
             Home
           </Link>
-          <Link component={RouterLink} variant="button" color="text.primary" to="/fundraiser" sx={{ my: 1, mx: 1.5 }}>
-            Fundraiser
+          <Link component={RouterLink} variant="button" color="text.primary" to="/create" sx={{ my: 1, mx: 1.5 }}>
+            Create a fundraiser
           </Link>
         </nav>
         <UserInfo />

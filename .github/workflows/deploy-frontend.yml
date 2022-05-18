@@ -24,7 +24,8 @@ jobs:
           yarn install --frozen-lockfile
           echo REACT_APP_MORALIS_APP_ID=${{ secrets.REACT_APP_MORALIS_APP_ID }} >> .env
           echo REACT_APP_MORALIS_SERVER_URL=${{ secrets.REACT_APP_MORALIS_SERVER_URL }} >> .env
-          yarn build
+          echo REACT_APP_ALLOWED_NETWORK=${{ secrets.REACT_APP_ALLOWED_NETWORK }} >> .env
+          CI= yarn build
       - name: Build CDK app stack
         run: |
           cd infra

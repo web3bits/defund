@@ -4,8 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useChain, useMoralis } from "react-moralis";
 import makeBlockie from "ethereum-blockies-base64";
 import { NotificationType, useGlobalContext } from "../../context/GlobalContext";
-
-const ALLOWED_NETWORK = process.env.REACT_APP_ALLOWED_NETWORK || "0x2a";
+import { ALLOWED_NETWORK } from "./RequireAuth";
 
 export const UserInfo = () => {
   const {
