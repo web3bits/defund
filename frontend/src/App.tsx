@@ -2,10 +2,11 @@ import * as React from "react";
 import { GlobalContextProvider } from "./context/GlobalContext";
 import { Route, Routes } from "react-router-dom";
 import { Layout } from "./components/ui/Layout";
-import { HomePage } from "./components/pages/HomePage";
-import { Error404 } from "./components/pages/Error404";
-import { CreateFundraiserPage } from "./components/pages/CreateFundraiserPage";
+import { HomePage } from "./pages/HomePage";
+import { Error404 } from "./pages/Error404";
+import { CreateFundraiserPage } from "./pages/CreateFundraiserPage";
 import { RequireAuth } from "./components/ui/RequireAuth";
+import { OpenFundRaisersPage } from "./pages/OpendFundraisersPage";
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           }
         >
           <Route path="/create" element={<CreateFundraiserPage />} />
+          <Route path="/fundraisers" element={<OpenFundRaisersPage />} />
         </Route>
         <Route path="*" element={<Error404 />} />
       </Routes>

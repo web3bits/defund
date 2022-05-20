@@ -9,6 +9,7 @@
     "@mui/styles": "^5.8.0",
     "@types/react": "^18.0.9",
     "@types/react-dom": "latest",
+    "dayjs": "^1.11.2",
     "ethereum-blockies-base64": "^1.0.2",
     "moralis": "^1.7.0",
     "react": "latest",
