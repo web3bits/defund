@@ -11,10 +11,13 @@ contract DeFund {
     DeFundFactory.FundraiserType public immutable i_type;
     DeFundFactory.FundraiserCategory public immutable i_category;
     uint public immutable i_endDate;
+    uint public immutable i_goalAmount;
     DeFundFactory private immutable i_factory;
 
     /* State variables */
     string[] public s_descriptions;
+    string[] public s_images;
+    uint public s_defaultImage;
     string public s_name;
     DeFundFactory.FundraiserStatus public s_status;
     mapping(address => uint) public s_balances;
@@ -26,18 +29,20 @@ contract DeFund {
         address _owner,
         DeFundFactory.FundraiserType _type,
         DeFundFactory.FundraiserCategory _category,
-        uint _endDate,
         string memory _name,
-        string memory _initialDescription
+        string memory _initialDescription,
+        uint _endDate,
+        uint8 _goalAmount
     ) {
         i_id = _id;
         i_owner = _owner;
         i_type = _type;
         i_category = _category;
-        i_endDate = _endDate;
         s_name = _name;
         s_descriptions.push(_initialDescription);
         i_factory = DeFundFactory(msg.sender);
+        i_endDate = _endDate;
+        i_goalAmount = _goalAmount;
         s_status = DeFundFactory.FundraiserStatus.ACTIVE;
     }
 
@@ -61,8 +66,7 @@ contract DeFund {
     }
 
     /* Withdraw funds from the contract */
-    function withdrawFunds(uint _amount, address _tokenAddress) public {
-        require(msg.sender == i_owner, "You must be the owner of the fundraiser to withdraw");
+    function withdrawFunds(uint _amount, address _tokenAddress) public onlyOwner {
         require(_amount > 0, "Cannot withdraw 0");
         uint currentBalance = s_balances[_tokenAddress];
         require(_amount <= currentBalance, "Sorry, can't withdraw more than total donations");
@@ -78,7 +82,38 @@ contract DeFund {
         // TODO emit
     }
 
-    // TODO update description
+    /* Add a picture */
+    function addImage(string memory _picture, bool makeDefault) external onlyOwner {
+        s_images.push(_picture);
+        if (makeDefault == true) {
+            s_defaultImage = s_images.length - 1;
+        }
+    }
+
+    /* Set picture as default */
+    function setDefaultPicture(uint _pictureIdx) external onlyOwner {
+        require(_pictureIdx < s_images.length, "Image not found");
+        s_defaultImage = _pictureIdx;
+    }
+
+    /* Update description */
+    function setDefaultPicture(string memory _description) external onlyOwner {
+        s_descriptions.push(_description);
+    }
+
+    /* Close fundraiser and revert all donations */
+    function closeAndRevertDonations() public onlyOwner {
+        require(s_status == DeFundFactory.FundraiserStatus.ACTIVE, "You can only close active fundraisers");
+        // TODO return donations
+        s_status = DeFundFactory.FundraiserStatus.CLOSED;
+    }
+
+    /* Modifiers */
+    modifier onlyOwner {
+        require(msg.sender == i_owner, "You must be the owner of the fundraiser to perform this operation");
+        _;
+    }
+
     // TODO recurring
     // TODO close one time when goal is reached (maybe control this from factory?)
 
