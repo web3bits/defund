@@ -4,7 +4,6 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
-import "hardhat/console.sol";
 import "./DeFund.sol";
 
     error DeFundFactory__deposit__zero_deposit();
@@ -43,6 +42,10 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
     mapping(uint => address) public s_fundraisers;
     mapping(address => uint[]) public s_fundraisersByOwner;
 
+    /* Events */
+    event FundraiserCreated(uint indexed fundraiserId, address indexed creator, string title, DeFundFactory.FundraiserType fundraiserType, DeFundFactory.FundraiserCategory category, uint endDate, uint8 goalAmount);
+
+
     // TODO fundraiser goal is always in USD, it auto-closes once the threshold is reached (use keepers and price feeds)
 
     /* Deposit funds to the contract */
@@ -67,8 +70,6 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
             s_userBalances[msg.sender][_tokenAddress] = s_userBalances[msg.sender][_tokenAddress] + _amount;
         }
-
-        // TODO emit
     }
 
     /* Withdraw funds from the contract */
@@ -85,8 +86,6 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             // TODO
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
         }
-
-        // TODO emit
     }
 
     /* Add a new token to the list allowed for deposits and withdrawals */
@@ -108,12 +107,14 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
         return false;
     }
 
+    /* Create a new fundraiser */
     function createFundraiser(
         FundraiserType _type,
         FundraiserCategory _category,
         string calldata _name,
         string calldata _description,
-        uint _endDate
+        uint _endDate,
+        uint8 _goalAmount
     ) external returns (uint fundraiserId) {
         fundraiserId = s_counter;
         s_counter = s_counter + 1;
@@ -123,17 +124,17 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             msg.sender,
             _type,
             _category,
-            _endDate,
             _name,
-            _description
+            _description,
+            _endDate,
+            _goalAmount
         );
 
         s_fundraisers[fundraiserId] = address(fundraiser);
         s_fundraisersByOwner[msg.sender].push(fundraiserId);
 
-        // TODO emit
+        emit FundraiserCreated(fundraiserId, msg.sender, _name, _type, _category, _endDate, _goalAmount);
 
         return fundraiserId;
     }
-
 }

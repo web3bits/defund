@@ -1,0 +1,8 @@
+export enum FundRaiserCategory {
+  MEDICAL,
+  EMERGENCY,
+  FINANCIAL_EMERGENCY,
+  COMMUNITY,
+  ANIMALS,
+  EDUCATION,
+}
