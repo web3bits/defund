@@ -12,6 +12,8 @@ import { FundRaiserCategory } from "../enums/FundRaiserCategory";
 import { GenericForm, GenericFormField } from "../components/form/GenericForm";
 import dayjs from "dayjs";
 import Moralis from "moralis";
+import { useWeb3Storage } from "../hooks/useWeb3Storage";
+import { v4 as uuidv4 } from "uuid";
 
 const factoryAddress = process.env.REACT_APP_FACTORY_CONTRACT_ADDRESS!;
 
@@ -122,6 +124,7 @@ export const CreateFundraiserPage = () => {
     functionName: "createFundraiser",
     abi: factoryAbi.abi,
   });
+  const { storeAsJson } = useWeb3Storage();
 
   const handleMoralisError = (err: string[] | Error | any) => {
     if (Array.isArray(err)) {
@@ -144,13 +147,15 @@ export const CreateFundraiserPage = () => {
     setLoading(true);
 
     try {
+      const fileName = `${uuidv4()}.json`;
+      const descriptionCid = await storeAsJson(values.fundraiserDescription, fileName);
       await runContractFunction({
         params: {
           params: {
             _type: Number(values.fundraiserType),
             _category: Number(values.fundraiserCategory),
             _name: values.fundraiserName,
-            _description: values.fundraiserDescription,
+            _description: descriptionCid,
             _endDate: values.fundraiserEndDate ? dayjs(values.fundraiserEndDate).unix() : 0,
             _goalAmount: Moralis.Units.ETH(values.fundraiserGoalAmount || 0),
           },
