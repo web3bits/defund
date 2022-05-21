@@ -27,7 +27,7 @@ yarn install
 ### 3. Run deploy script
 
 ```shell
-npx hardhat run scripts/deploy.ts --network kovan
+yarn hardhat run scripts/deploy.ts --network kovan
 ```
 
 ### 4. [OPTIONAL] Verify source code on Etherscan
@@ -35,7 +35,7 @@ npx hardhat run scripts/deploy.ts --network kovan
 Copy deployed address from step 3 and run:
 
 ```shell
-npx hardhat verify --network kovan <DEPLOYED_CONTRACT_ADDRESS>
+yarn hardhat verify --network kovan <DEPLOYED_CONTRACT_ADDRESS>
 ```
 
 ## Frontend
