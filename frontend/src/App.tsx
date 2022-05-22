@@ -8,6 +8,7 @@ import { CreateFundraiserPage } from "./pages/CreateFundraiserPage";
 import { RequireAuth } from "./components/ui/RequireAuth";
 import { OpenFundRaisersPage } from "./pages/OpendFundraisersPage";
 import { AccountPage } from "./pages/AccountPage";
+import { FundraiserDetailsPage } from "./pages/FundraiserDetailsPage";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         >
           <Route path="/create" element={<CreateFundraiserPage />} />
           <Route path="/fundraisers" element={<OpenFundRaisersPage />} />
+          <Route path="/fundraiser/:address" element={<FundraiserDetailsPage />} />
           <Route path="/account" element={<AccountPage />} />
         </Route>
         <Route path="*" element={<Error404 />} />
