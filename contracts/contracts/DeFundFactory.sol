@@ -81,7 +81,8 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
         s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
 
         if (_tokenAddress == address(0)) {
-            payable(msg.sender).transfer(_amount);
+            (bool success, ) = msg.sender.call{value: _amount}("");
+            require(success, "Transfer failed.");
         } else {
             // TODO
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
