@@ -5,6 +5,8 @@ import { useChain, useMoralis } from "react-moralis";
 import makeBlockie from "ethereum-blockies-base64";
 import { NotificationType, useGlobalContext } from "../../context/GlobalContext";
 import { ALLOWED_NETWORK } from "./RequireAuth";
+import Link from "@mui/material/Link";
+import { Link as RouterLink } from "react-router-dom";
 
 export const UserInfo = () => {
   const {
@@ -87,7 +89,9 @@ export const UserInfo = () => {
             Sign out
           </Button>
           <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />{" "}
-          {user.get("username")}
+          <Link component={RouterLink} to="account" color="secondary">
+            {user.get("username")}
+          </Link>
         </>
       ) : (
         <Button onClick={loginHandler} variant="contained" color="info" sx={{ mr: 1.5, ml: 3 }}>
