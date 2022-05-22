@@ -5,9 +5,10 @@ import { useMoralis, useWeb3Contract } from "react-moralis";
 import { NotificationType, useGlobalContext } from "../context/GlobalContext";
 import Moralis from "moralis";
 import { AccountDetails } from "../components/account/AccountDetails";
-import { factoryAddress } from "../utils/FundRaiserUtils";
+import { ADDRESS_ZERO, factoryAddress } from "../utils/FundRaiserUtils";
 import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { useEffect, useState } from "react";
+import { DepositFunds } from "../components/account/DepositFunds";
 
 export const AccountPage = () => {
   const { addNotification, setLoading } = useGlobalContext();
@@ -38,7 +39,7 @@ export const AccountPage = () => {
     runContractFunction({
       params: {
         params: {
-          _token: "0x0000000000000000000000000000000000000000",
+          _token: ADDRESS_ZERO,
         },
       },
       onError: handleMoralisError,
@@ -56,6 +57,7 @@ export const AccountPage = () => {
         Your account
       </Typography>
       <AccountDetails user={user} chainId={chainId} network={network} ethBalance={ethBalance} />
+      <DepositFunds />
     </>
   );
 };

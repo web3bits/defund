@@ -1,9 +1,6 @@
 import React from "react";
 import { createStyles, makeStyles } from "@mui/styles";
-import { Button, Grid, lighten, Paper, Theme } from "@mui/material";
-import { Form } from "react-final-form";
-import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { Grid, lighten, Paper, Theme } from "@mui/material";
 import Moralis from "moralis";
 import { MoralisContextValue } from "react-moralis";
 
@@ -22,8 +19,8 @@ export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDe
         padding: 16,
       },
       label: {
-        textAlign: "right"
-      }
+        textAlign: "right",
+      },
     })
   );
 
