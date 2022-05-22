@@ -23,6 +23,12 @@ contract DeFund {
     mapping(address => uint) public s_balances;
     mapping(address => mapping(address => uint)) public s_donors;
 
+    /* Modifiers */
+    modifier onlyOwner {
+        require(msg.sender == i_owner, "You must be the owner of the fundraiser to perform this operation");
+        _;
+    }
+
     /* Create a new instance of a fundraiser */
     constructor(
         uint _id,
@@ -108,10 +114,35 @@ contract DeFund {
         s_status = DeFundFactory.FundraiserStatus.CLOSED;
     }
 
-    /* Modifiers */
-    modifier onlyOwner {
-        require(msg.sender == i_owner, "You must be the owner of the fundraiser to perform this operation");
-        _;
+    /* Get all details */
+    function getAllDetails() public view returns (
+        uint id,
+        address owner,
+        DeFundFactory.FundraiserType fType,
+        DeFundFactory.FundraiserCategory category,
+        uint endDate,
+        uint goalAmount,
+        string[] memory descriptions,
+        string[] memory images,
+        uint defaultImage,
+        string memory name,
+        DeFundFactory.FundraiserStatus status,
+        uint balances
+    ) {
+        return (
+            i_id,
+            i_owner,
+            i_type,
+            i_category,
+            i_endDate,
+            i_goalAmount,
+            s_descriptions,
+            s_images,
+            s_defaultImage,
+            s_name,
+            s_status,
+            s_balances[address(0)]
+        );
     }
 
     // TODO recurring
