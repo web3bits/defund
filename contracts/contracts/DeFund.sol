@@ -38,7 +38,7 @@ contract DeFund {
         string memory _name,
         string memory _initialDescription,
         uint _endDate,
-        uint8 _goalAmount
+        uint _goalAmount
     ) {
         i_id = _id;
         i_owner = _owner;
@@ -53,20 +53,22 @@ contract DeFund {
     }
 
     /* Donate funds to the fundraiser */
-    function makeDonation(uint _amount, address _tokenAddress) external payable {
+    function makeDonation(address _donorAddress, uint _amount, address _tokenAddress) external payable returns (bool) {
         // TODO check status - should not accept donations if status != active
         require(_amount > 0, "Cannot deposit 0");
         if (_tokenAddress == address(0)) {
             // ETH deposit
             require(msg.value == _amount);
-            s_donors[msg.sender][address(0)] = s_donors[msg.sender][address(0)] + _amount;
+            s_donors[_donorAddress][address(0)] = s_donors[_donorAddress][address(0)] + _amount;
             s_balances[address(0)] = s_balances[address(0)] + _amount;
         } else {
             // ERC20 deposit
-            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
-            s_donors[msg.sender][_tokenAddress] = s_donors[msg.sender][_tokenAddress] + _amount;
+            IERC20(_tokenAddress).transferFrom(_donorAddress, address(this), _amount);
+            s_donors[_donorAddress][_tokenAddress] = s_donors[_donorAddress][_tokenAddress] + _amount;
             s_balances[_tokenAddress] = s_balances[_tokenAddress] + _amount;
         }
+
+        return true;
 
         // TODO emit
     }
