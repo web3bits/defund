@@ -137,4 +137,24 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
 
         return fundraiserId;
     }
+
+    function listFundraisersByStatus(FundraiserStatus _status) public view returns (address[] memory filteredFundraisers) {
+        uint resultCount;
+        for (uint i = 0; i < s_counter; i++) {
+            if (DeFund(s_fundraisers[i]).s_status() == _status) {
+                resultCount++;
+            }
+        }
+        filteredFundraisers = new address[](resultCount);
+        uint resultIdx;
+
+        for (uint i = 0; i < s_counter; i++) {
+            if (DeFund(s_fundraisers[i]).s_status() == _status) {
+                filteredFundraisers[resultIdx] = s_fundraisers[i];
+                resultIdx++;
+            }
+        }
+
+        return filteredFundraisers;
+    }
 }
