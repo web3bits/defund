@@ -137,4 +137,9 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
 
         return fundraiserId;
     }
+
+    /* Get user balance */
+    function getMyBalance(address _token) public view returns (uint balance) {
+        return s_userBalances[msg.sender][_token];
+    }
 }

@@ -15,3 +15,4 @@ FUNDRAISER_STATUS[FundRaiserStatus.CLOSED] = "Closed";
 
 export const getFundRaiserType = (type: FundraiserType) => FUNDRAISER_TYPES[type] ?? "Unknown";
 export const getFundRaiserStatus = (type: FundRaiserStatus) => FUNDRAISER_STATUS[type] ?? "Unknown";
+export const factoryAddress = process.env.REACT_APP_FACTORY_CONTRACT_ADDRESS!;
