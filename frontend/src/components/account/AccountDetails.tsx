@@ -1,32 +1,29 @@
 import React from "react";
 import { createStyles, makeStyles } from "@mui/styles";
-import { Grid, lighten, Paper, Theme } from "@mui/material";
+import { Grid } from "@mui/material";
 import Moralis from "moralis";
 import { MoralisContextValue } from "react-moralis";
+import { StyledPaper } from "../ui/StyledPaper";
+import BN from "bn.js";
 
 interface AccountDetailsProps {
   user: Moralis.User | null;
   chainId: MoralisContextValue["chainId"];
   network: MoralisContextValue["network"];
-  ethBalance?: string;
+  ethBalance: BN;
 }
 
 export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDetailsProps): React.ReactElement => {
-  const useStyles = makeStyles((theme: Theme) =>
+  const useStyles = makeStyles(() =>
     createStyles({
-      formPaper: {
-        backgroundColor: lighten(theme.palette.background.default, 0.2),
-        padding: 16,
-      },
       label: {
         textAlign: "right",
       },
     })
   );
-
   const classes = useStyles();
   return (
-    <Paper className={classes.formPaper}>
+    <StyledPaper>
       <Grid container alignItems="flex-start" spacing={4}>
         <Grid item xs={2} className={classes.label}>
           <strong>User ID:</strong>
@@ -59,9 +56,9 @@ export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDe
           <strong>Your balance:</strong>
         </Grid>
         <Grid item xs={5}>
-          <code>{ethBalance ?? 0} ETH</code>
+          <code>{Moralis.Units.FromWei(ethBalance.toString(10))} ETH</code>
         </Grid>
       </Grid>
-    </Paper>
+    </StyledPaper>
   );
 };

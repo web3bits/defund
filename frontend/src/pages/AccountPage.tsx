@@ -3,17 +3,18 @@ import * as React from "react";
 import Typography from "@mui/material/Typography";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import { NotificationType, useGlobalContext } from "../context/GlobalContext";
-import Moralis from "moralis";
 import { AccountDetails } from "../components/account/AccountDetails";
 import { ADDRESS_ZERO, factoryAddress } from "../utils/FundRaiserUtils";
 import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { useEffect, useState } from "react";
 import { DepositFunds } from "../components/account/DepositFunds";
+import { WithdrawFunds } from "../components/account/WithdrawFunds";
+import BN from "bn.js";
 
 export const AccountPage = () => {
   const { addNotification, setLoading } = useGlobalContext();
   const { user, chainId, network } = useMoralis();
-  const [ethBalance, setEthBalance] = useState<string>();
+  const [ethBalance, setEthBalance] = useState<BN>(new BN(0));
 
   const { runContractFunction, isFetching, isLoading } = useWeb3Contract({
     abi: factoryAbi.abi,
@@ -31,7 +32,7 @@ export const AccountPage = () => {
   };
 
   const handleMoralisSuccess = (data: any) => {
-    setEthBalance(Moralis.Units.FromWei(data));
+    setEthBalance(data);
     setLoading(false);
   };
 
@@ -58,6 +59,7 @@ export const AccountPage = () => {
       </Typography>
       <AccountDetails user={user} chainId={chainId} network={network} ethBalance={ethBalance} />
       <DepositFunds />
+      {!ethBalance.isZero() && <WithdrawFunds ethBalance={ethBalance} address={user?.get("ethAddress")} />}
     </>
   );
 };

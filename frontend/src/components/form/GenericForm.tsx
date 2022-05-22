@@ -1,9 +1,9 @@
-import { Button, Grid, lighten, Paper, Theme } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { Form } from "react-final-form";
 import React from "react";
-import { createStyles, makeStyles } from "@mui/styles";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers";
+import { StyledPaper } from "../ui/StyledPaper";
 
 export interface GenericFormField {
   size: number;
@@ -28,16 +28,6 @@ export const GenericForm = ({
   isDisabled = false,
   showResetButton = false,
 }: CreateFundraiserFormProps): React.ReactElement => {
-  const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      formPaper: {
-        backgroundColor: lighten(theme.palette.background.default, 0.2),
-        padding: 16,
-      },
-    })
-  );
-
-  const classes = useStyles();
   return (
     <Form
       onSubmit={onSubmit}
@@ -45,7 +35,7 @@ export const GenericForm = ({
       validate={validate}
       render={({ handleSubmit, form, submitting, pristine, values }) => (
         <form onSubmit={handleSubmit} noValidate>
-          <Paper className={classes.formPaper}>
+          <StyledPaper>
             <Grid container alignItems="flex-start" spacing={2}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 {fields
@@ -71,7 +61,7 @@ export const GenericForm = ({
                 </Button>
               </Grid>
             </Grid>
-          </Paper>
+          </StyledPaper>
         </form>
       )}
     />

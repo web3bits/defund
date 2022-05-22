@@ -1,6 +1,5 @@
 import React from "react";
-import { createStyles, makeStyles } from "@mui/styles";
-import { lighten, MenuItem, Paper, Theme, Typography } from "@mui/material";
+import { MenuItem, Typography } from "@mui/material";
 import Moralis from "moralis";
 import { GenericForm, GenericFormField } from "../form/GenericForm";
 import * as Yup from "yup";
@@ -8,6 +7,7 @@ import { makeRequired, makeValidate, Select, TextField } from "mui-rff";
 import { NotificationType, useGlobalContext } from "../../context/GlobalContext";
 import { ADDRESS_ZERO, factoryAddress } from "../../utils/FundRaiserUtils";
 import * as factoryAbi from "../../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
+import { StyledPaper } from "../ui/StyledPaper";
 
 const schema = Yup.object({
   token: Yup.string().required(),
@@ -49,15 +49,6 @@ const formFields: GenericFormField[] = [
 
 export const DepositFunds = (): React.ReactElement => {
   const { addNotification, setLoading } = useGlobalContext();
-  const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      paper: {
-        backgroundColor: lighten(theme.palette.background.default, 0.2),
-        padding: 16,
-      },
-    })
-  );
-  const classes = useStyles();
 
   const handleMoralisError = (err: string[] | Error | any) => {
     if (Array.isArray(err)) {
@@ -102,7 +93,7 @@ export const DepositFunds = (): React.ReactElement => {
   };
 
   return (
-    <Paper className={classes.paper} sx={{ mt: 3 }}>
+    <StyledPaper sx={{ mt: 3 }}>
       <Typography component="h1" variant="h5">
         Deposit funds (ETH)
       </Typography>
@@ -112,6 +103,6 @@ export const DepositFunds = (): React.ReactElement => {
         fields={formFields}
         initialValues={{ token: ADDRESS_ZERO }}
       />
-    </Paper>
+    </StyledPaper>
   );
 };
