@@ -6,9 +6,10 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
 import "./DeFund.sol";
 
-    error DeFundFactory__deposit__zero_deposit();
-    error DeFundFactory__deposit__less_than_declared();
-    error DeFundFactory__deposit__token_not_allowed();
+error DeFundFactory__deposit__zero_deposit();
+error DeFundFactory__deposit__less_than_declared();
+error DeFundFactory__deposit__token_not_allowed();
+error DeFundFactory__not_implemented();
 
 contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownable {
     /* Types */
@@ -43,7 +44,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
     mapping(address => uint[]) public s_fundraisersByOwner;
 
     /* Events */
-    event FundraiserCreated(uint indexed fundraiserId, address indexed creator, string title, DeFundFactory.FundraiserType fundraiserType, DeFundFactory.FundraiserCategory category, uint endDate, uint8 goalAmount);
+    event FundraiserCreated(uint indexed fundraiserId, address indexed creator, string title, DeFundFactory.FundraiserType fundraiserType, DeFundFactory.FundraiserCategory category, uint endDate, uint goalAmount);
 
 
     // TODO fundraiser goal is always in USD, it auto-closes once the threshold is reached (use keepers and price feeds)
@@ -70,6 +71,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
             s_userBalances[msg.sender][_tokenAddress] = s_userBalances[msg.sender][_tokenAddress] + _amount;
         }
+        // TODO emit "balance changed" event
     }
 
     /* Withdraw funds from the contract */
@@ -87,6 +89,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             // TODO
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
         }
+        // TODO emit "balance changed" event
     }
 
     /* Add a new token to the list allowed for deposits and withdrawals */
@@ -115,7 +118,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
         string calldata _name,
         string calldata _description,
         uint _endDate,
-        uint8 _goalAmount
+        uint _goalAmount
     ) external returns (uint fundraiserId) {
         fundraiserId = s_counter;
         s_counter = s_counter + 1;
@@ -137,6 +140,36 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
         emit FundraiserCreated(fundraiserId, msg.sender, _name, _type, _category, _endDate, _goalAmount);
 
         return fundraiserId;
+    }
+
+    /* Donate to a fundraiser (lookup by ID) */
+    function donateById(
+        uint _fundraiserId,
+        uint _amount,
+        address _tokenAddress
+    ) public {
+        donateByAddress(s_fundraisers[_fundraiserId], _amount, _tokenAddress);
+    }
+
+    /* Donate to a fundraiser (lookup by address) */
+    function donateByAddress(
+        address _fundraiserAddress,
+        uint _amount,
+        address _tokenAddress
+    ) public {
+        require(_amount > 0, "Cannot donate 0");
+        uint currentBalance = s_userBalances[msg.sender][_tokenAddress];
+        require(_amount <= currentBalance, "Sorry, can't donate more than you have in your account :)");
+
+        s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
+
+        if (_tokenAddress == address(0)) {
+            bool success = DeFund(_fundraiserAddress).makeDonation{value: _amount}(msg.sender, _amount, _tokenAddress);
+            require(success, "Transfer failed.");
+        } else {
+            // TODO
+            revert DeFundFactory__not_implemented();
+        }
     }
 
     /* Get user balance */
