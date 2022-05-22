@@ -81,7 +81,8 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
         s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
 
         if (_tokenAddress == address(0)) {
-            payable(msg.sender).transfer(_amount);
+            (bool success, ) = msg.sender.call{value: _amount}("");
+            require(success, "Transfer failed.");
         } else {
             // TODO
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
@@ -136,5 +137,10 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
         emit FundraiserCreated(fundraiserId, msg.sender, _name, _type, _category, _endDate, _goalAmount);
 
         return fundraiserId;
+    }
+
+    /* Get user balance */
+    function getMyBalance(address _token) public view returns (uint balance) {
+        return s_userBalances[msg.sender][_token];
     }
 }
