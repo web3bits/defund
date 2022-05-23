@@ -53,6 +53,34 @@ export const UserInfo = () => {
 
   const classes = useStyles();
 
+  const btnStyles: any = makeStyles((theme: any) => ({
+    root: {
+      borderRadius: 35,
+      width: "120px",
+      fontSize: "15px",
+      border: "0px",
+      padding: "10px 0px",
+      cursor: "pointer",
+      fontWeight: "bold"
+    },
+    darkBg: {
+      background: theme.palette.primary.dark,
+      color: theme.palette.primary.light,
+      "&:hover": {
+        backgroundColor: theme.palette.error.dark
+      },
+    },
+    lightBg: {
+      background: theme.palette.secondary.main,
+      color: theme.palette.primary.light,
+      "&:hover": {
+        backgroundColor: theme.palette.primary.dark
+      },
+    }
+  }));
+
+  const btnClasses = btnStyles();
+
   const loginHandler = () => {
     authenticate().then();
   };
@@ -85,18 +113,18 @@ export const UserInfo = () => {
     <>
       {isAuthenticated && user ? (
         <>
-          <Button onClick={logoutHandler} variant="contained" color="error" sx={{ mr: 1.5, ml: 3 }}>
-            Sign out
-          </Button>
           <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />{" "}
           <Link component={RouterLink} to="account" color="secondary">
             {user.get("username")}
           </Link>
+          <button onClick={logoutHandler} className={btnClasses.darkBg + ' ' + btnClasses.root}>
+            Logout
+          </button>
         </>
       ) : (
-        <Button onClick={loginHandler} variant="contained" color="info" sx={{ mr: 1.5, ml: 3 }}>
-          Sign in
-        </Button>
+        <button onClick={loginHandler} className={btnClasses.lightBg + ' ' + btnClasses.root}>
+          Login
+        </button>
       )}
     </>
   );
