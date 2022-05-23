@@ -25,6 +25,8 @@ jobs:
           echo REACT_APP_MORALIS_APP_ID=${{ secrets.REACT_APP_MORALIS_APP_ID }} >> .env
           echo REACT_APP_MORALIS_SERVER_URL=${{ secrets.REACT_APP_MORALIS_SERVER_URL }} >> .env
           echo REACT_APP_ALLOWED_NETWORK=${{ secrets.REACT_APP_ALLOWED_NETWORK }} >> .env
+          echo REACT_APP_FACTORY_CONTRACT_ADDRESS=${{ secrets.REACT_APP_FACTORY_CONTRACT_ADDRESS }} >> .env
+          echo REACT_APP_WEB3_STORAGE_TOKEN=${{ secrets.REACT_APP_WEB3_STORAGE_TOKEN }} >> .env
           export NODE_OPTIONS="--max-old-space-size=4096"
           CI= yarn build
       - name: Build CDK app stack
