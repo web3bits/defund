@@ -4,6 +4,7 @@ pragma solidity ^0.8.7;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/KeeperCompatibleInterface.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./DeFund.sol";
 
 error DeFundFactory__deposit__zero_deposit();
@@ -42,13 +43,19 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
     uint private s_counter = 0;
     mapping(uint => address) public s_fundraisers;
     mapping(address => uint[]) public s_fundraisersByOwner;
+    AggregatorV3Interface public s_priceFeed;
 
     /* Events */
     event FundraiserCreated(uint indexed fundraiserId, address indexed creator, string title, DeFundFactory.FundraiserType fundraiserType, DeFundFactory.FundraiserCategory category, uint endDate, uint goalAmount);
     event UserBalanceChanged(address indexed creator, address tokenAddress, uint previousBalance, uint newBalance);
 
 
-    // TODO fundraiser goal is always in USD, it auto-closes once the threshold is reached (use keepers and price feeds)
+    /* Constructor - provide ETH/USD Chainlink price feed address */
+    /* Kovan: 0x9326BFA02ADD2366b30bacB125260Af641031331 */
+    constructor(/*address _ethUsdPriceFeed*/) {
+        // s_priceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
+        s_priceFeed = AggregatorV3Interface(0x9326BFA02ADD2366b30bacB125260Af641031331);
+    }
 
     /* Deposit funds to the contract */
     function depositFunds(uint _amount, address _tokenAddress) external payable {
@@ -69,9 +76,8 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
                 revert DeFundFactory__deposit__token_not_allowed();
             }
 
-            // TODO test with approve beforehand...
-            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
-            s_userBalances[msg.sender][_tokenAddress] = s_userBalances[msg.sender][_tokenAddress] + _amount;
+            /// TODO
+            revert DeFundFactory__not_implemented();
         }
         emit UserBalanceChanged(msg.sender, _tokenAddress, currentBalance, s_userBalances[msg.sender][_tokenAddress]);
     }
@@ -89,7 +95,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             require(success, "Transfer failed.");
         } else {
             // TODO
-            IERC20(_tokenAddress).transfer(msg.sender, _amount);
+            revert DeFundFactory__not_implemented();
         }
         emit UserBalanceChanged(msg.sender, _tokenAddress, s_userBalances[msg.sender][_tokenAddress], currentBalance - _amount);
     }
