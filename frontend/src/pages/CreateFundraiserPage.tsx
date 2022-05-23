@@ -11,7 +11,6 @@ import { FundraiserType } from "../enums/FundRaiserType";
 import { FundRaiserCategory } from "../enums/FundRaiserCategory";
 import { GenericForm, GenericFormField } from "../components/form/GenericForm";
 import dayjs from "dayjs";
-import Moralis from "moralis";
 import { useWeb3Storage } from "../hooks/useWeb3Storage";
 import { v4 as uuidv4 } from "uuid";
 import { factoryAddress } from "../utils/FundRaiserUtils";
