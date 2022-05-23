@@ -45,6 +45,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
 
     /* Events */
     event FundraiserCreated(uint indexed fundraiserId, address indexed creator, string title, DeFundFactory.FundraiserType fundraiserType, DeFundFactory.FundraiserCategory category, uint endDate, uint goalAmount);
+    event UserBalanceChanged(address indexed creator, address tokenAddress, uint previousBalance, uint newBalance);
 
 
     // TODO fundraiser goal is always in USD, it auto-closes once the threshold is reached (use keepers and price feeds)
@@ -54,6 +55,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
         if (_amount == 0) {
             revert DeFundFactory__deposit__zero_deposit();
         }
+        uint currentBalance = s_userBalances[msg.sender][_tokenAddress];
         if (_tokenAddress == address(0)) {
             // ETH deposit
             if (msg.value < _amount) {
@@ -71,7 +73,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
             s_userBalances[msg.sender][_tokenAddress] = s_userBalances[msg.sender][_tokenAddress] + _amount;
         }
-        // TODO emit "balance changed" event
+        emit UserBalanceChanged(msg.sender, _tokenAddress, currentBalance, s_userBalances[msg.sender][_tokenAddress]);
     }
 
     /* Withdraw funds from the contract */
@@ -89,7 +91,7 @@ contract DeFundFactory is /*ChainlinkClient, KeeperCompatibleInterface,*/ Ownabl
             // TODO
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
         }
-        // TODO emit "balance changed" event
+        emit UserBalanceChanged(msg.sender, _tokenAddress, s_userBalances[msg.sender][_tokenAddress], currentBalance - _amount);
     }
 
     /* Add a new token to the list allowed for deposits and withdrawals */

@@ -82,7 +82,8 @@ contract DeFund {
         s_balances[_tokenAddress] = currentBalance - _amount;
 
         if (_tokenAddress == address(0)) {
-            payable(msg.sender).transfer(_amount);
+            (bool success, ) = msg.sender.call{value: _amount}("");
+            require(success, "Transfer failed.");
         } else {
             IERC20(_tokenAddress).transfer(msg.sender, _amount);
         }
