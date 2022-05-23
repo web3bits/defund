@@ -23,6 +23,7 @@ export const AccountPage = () => {
   });
 
   const handleMoralisError = (err: string[] | Error | any) => {
+    console.error("Error calling getMyBalance, param = " + ADDRESS_ZERO);
     if (Array.isArray(err)) {
       err = err[0];
     }
@@ -37,6 +38,9 @@ export const AccountPage = () => {
   };
 
   useEffect(() => {
+    if (!user?.id) {
+      return;
+    }
     runContractFunction({
       params: {
         params: {
