@@ -17,14 +17,6 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
-        </Route>
-        <Route
-          element={
-            <RequireAuth>
-              <Layout />
-            </RequireAuth>
-          }
-        >
           <Route path="/create" element={<CreateFundraiserPage />} />
           <Route path="/fundraisers" element={<OpenFundRaisersPage />} />
           <Route path="/fundraiser/:address" element={<FundraiserDetailsPage />} />

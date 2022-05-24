@@ -1,13 +1,15 @@
 import { useChain, useMoralis } from "react-moralis";
 import { CircularProgress, Container } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Typography from "@mui/material/Typography";
-import { Navigation } from "./Navigation";
-import { Notifications } from "./Notifications";
 
 export const ALLOWED_NETWORK = process.env.REACT_APP_ALLOWED_NETWORK || "0x2a";
 
 export function RequireAuth({ children }: { children: JSX.Element }) {
+
+  const router = useLocation();
+  const requireAuth = router.pathname !== "/";
   const { isAuthenticated, isInitialized, isWeb3Enabled, enableWeb3 } = useMoralis();
   const { chainId } = useChain();
   const [isAuthorized, setAuthorized] = useState(false);
@@ -35,16 +37,16 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
   if (!isAuthorized) {
     return (
       <>
-        <Navigation />;
-        <Notifications />;
-        <Container disableGutters maxWidth="lg" component="main" sx={{ py: 2 }}>
-          <Typography component="h1" variant="h2" color="text.primary" gutterBottom>
-            Log in to see this page
-          </Typography>
-          <Typography component="p">
-            To see this page you have to be logged in and connected to the correct network (Kovan).
-          </Typography>
-        </Container>
+        {requireAuth &&
+          <Container disableGutters maxWidth="md" component="main" sx={{ py: 10, textAlign: "center"}}>
+            <Typography component="h1" variant="h2" color="primary.light" gutterBottom>
+              Log in to see this page
+            </Typography>
+            <Typography component="p" color="primary.light">
+              To see this page you have to be logged in and connected to the correct network (Kovan).
+            </Typography>
+          </Container>
+        }
       </>
     );
   }

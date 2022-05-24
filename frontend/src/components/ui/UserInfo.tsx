@@ -57,7 +57,7 @@ export const UserInfo = () => {
     root: {
       borderRadius: 35,
       width: "120px",
-      fontSize: "15px",
+      fontSize: "13px",
       border: "0px",
       padding: "10px 0px",
       cursor: "pointer",
@@ -105,9 +105,9 @@ export const UserInfo = () => {
     );
   }
 
-  if (isAuthenticating) {
-    return <CircularProgress color="secondary" />;
-  }
+  // if (isAuthenticating) {
+  //   return <CircularProgress color="secondary" />;
+  // }
 
   return (
     <>
@@ -118,12 +118,12 @@ export const UserInfo = () => {
             {user.get("username")}
           </Link>
           <button onClick={logoutHandler} className={btnClasses.darkBg + ' ' + btnClasses.root}>
-            Logout
+            LOGOUT
           </button>
         </>
       ) : (
         <button onClick={loginHandler} className={btnClasses.lightBg + ' ' + btnClasses.root}>
-          Login
+          LOGIN
         </button>
       )}
     </>
