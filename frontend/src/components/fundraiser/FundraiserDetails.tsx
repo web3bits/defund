@@ -5,6 +5,7 @@ import { FundraiserDetailsData } from "../../enums/FundRaiser";
 import { StyledPaper } from "../ui/StyledPaper";
 import Typography from "@mui/material/Typography";
 import { Alert } from "@mui/material";
+import { sameAddress } from "../../utils/FundRaiserUtils";
 
 interface FundraiserDetailsProps {
   user: Moralis.User | null;
@@ -16,13 +17,15 @@ export const FundraiserDetails = ({ data, user }: FundraiserDetailsProps) => {
     return <Alert severity="error">Sorry, we couldn't fetch this fundraiser's details :(</Alert>;
   }
 
+
   return (
     <>
+      {sameAddress(data.owner, user?.get("ethAddress")) && <Alert>Looks like this is your fundraiser!</Alert>}
       <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
         {data.name}
       </Typography>
       <StyledPaper>
-        <Debug input={{ data, user }} />
+        <Debug input={{ data }} />
       </StyledPaper>
     </>
   );

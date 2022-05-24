@@ -21,6 +21,7 @@ export const getFundRaiserStatus = (type: FundRaiserStatus) => FUNDRAISER_STATUS
 export const factoryAddress = process.env.REACT_APP_FACTORY_CONTRACT_ADDRESS!;
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
+export const sameAddress = (a1: string, a2: string) => a1?.toLowerCase() === a2?.toLowerCase();
 export const hexToBN = (input: any): BN => {
   if (!input?._hex) {
     return new BN(0);
