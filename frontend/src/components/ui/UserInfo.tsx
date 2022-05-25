@@ -105,9 +105,13 @@ export const UserInfo = () => {
     );
   }
 
-  // if (isAuthenticating) {
-  //   return <CircularProgress color="secondary" />;
-  // }
+  if (isAuthenticating) {
+    return (
+      <div style={{ width: "120px", textAlign: "center" }}>
+        <CircularProgress color="secondary" />
+      </div>
+    );
+  }
 
   return (
     <>
