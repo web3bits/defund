@@ -22,7 +22,7 @@ export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
 export const sameAddress = (a1: string, a2: string) => a1?.toLowerCase() === a2?.toLowerCase();
 
-export const extractDetails = (data: any): FundraiserDetailsData | undefined => {
+export const extractDetails = (data: any, address = ""): FundraiserDetailsData | undefined => {
   if (!data || !Array.isArray(data) || data?.length !== 12) {
     return undefined;
   }
@@ -30,6 +30,7 @@ export const extractDetails = (data: any): FundraiserDetailsData | undefined => 
   try {
     return {
       id: data[0],
+      address,
       owner: data[1],
       type: data[2] as FundraiserType,
       category: data[3] as FundRaiserCategory,

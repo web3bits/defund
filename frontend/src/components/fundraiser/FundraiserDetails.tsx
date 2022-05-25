@@ -10,6 +10,7 @@ import { FundraiserType } from "../../enums/FundRaiserType";
 import { OneTimeDonation } from "../donation/OneTimeDonation";
 import { ContentMarkdown } from "../ipfs-content/ContentMarkdown";
 import { ContentImage } from "../ipfs-content/ContentImage";
+import { CreateRecurringDonation } from "../donation/CreateRecurringDonation";
 
 interface FundraiserDetailsProps {
   user: Moralis.User | null;
@@ -55,6 +56,9 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails }: Fund
       </StyledPaper>
 
       {data.type !== FundraiserType.LOAN && <OneTimeDonation fundraiser={data} onDonation={refreshFundraiserDetails} />}
+      {data.type === FundraiserType.RECURRING_DONATION && (
+        <CreateRecurringDonation fundraiser={data} onDonation={refreshFundraiserDetails} />
+      )}
     </>
   );
 };

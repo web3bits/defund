@@ -5,6 +5,7 @@ import BigNumber from "bignumber.js";
 
 export interface FundraiserDetailsData {
   id: BigNumber;
+  address: string;
   owner: string;
   type: FundraiserType;
   category: FundRaiserCategory;

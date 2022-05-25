@@ -30,7 +30,7 @@ export const FundraiserDetailsPage = () => {
   };
 
   const handleMoralisSuccess = (successData: any) => {
-    setData(extractDetails(successData));
+    setData(extractDetails(successData, address));
     setLoading(false);
   };
 
