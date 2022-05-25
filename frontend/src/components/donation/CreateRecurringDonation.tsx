@@ -9,7 +9,6 @@ import { ADDRESS_ZERO, factoryAddress } from "../../utils/FundRaiserUtils";
 import * as factoryAbi from "../../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { StyledPaper } from "../ui/StyledPaper";
 import { FundraiserDetailsData } from "../../enums/FundRaiser";
-import { useEthBalance } from "../../hooks/useEthBalance";
 import { RecurringInterval } from "../../enums/RecurringInterval";
 
 const schema = Yup.object({
@@ -86,8 +85,7 @@ export const CreateRecurringDonation = ({
   fundraiser,
   onDonation,
 }: CreateRecurringDonationProps): React.ReactElement => {
-  const { ethBalance, refreshBalance } = useEthBalance();
-  const { addNotification, setLoading, setLoadingMessage } = useGlobalContext();
+  const { addNotification, setLoading, setLoadingMessage, ethBalance, refreshBalance } = useGlobalContext();
 
   const handleMoralisError = (err: string[] | Error | any) => {
     if (Array.isArray(err)) {
@@ -111,7 +109,7 @@ export const CreateRecurringDonation = ({
         NotificationType.ERROR,
         `Your wallet balance of ${Moralis.Units.FromWei(
           ethBalance.toString(10)
-        )} ETH is not enough to cover first installment!`
+        )} ETH is not enough to cover first installment! Deposit more funds by clicking on your account name in navbar.`
       );
       return;
     }

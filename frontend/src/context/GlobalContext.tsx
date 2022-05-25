@@ -1,5 +1,9 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import BigNumber from "bignumber.js";
+import { useMoralis, useWeb3Contract } from "react-moralis";
+import { ADDRESS_ZERO, factoryAddress } from "../utils/FundRaiserUtils";
+import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 
 export enum NotificationType {
   ERROR,
@@ -13,6 +17,7 @@ export interface SystemNotification {
   message: string;
   header?: string;
   type: NotificationType;
+  keepOpen: boolean;
 }
 
 interface IGlobalContext {
@@ -23,6 +28,9 @@ interface IGlobalContext {
   addNotification: (type: NotificationType, message: string, header?: string) => void;
   closeNotification: (id: string) => void;
   notifications: SystemNotification[];
+  ethBalance: BigNumber;
+  ethBalanceReady: boolean;
+  refreshBalance: () => void;
 }
 
 export const defaultGlobalContext: IGlobalContext = {
@@ -33,6 +41,9 @@ export const defaultGlobalContext: IGlobalContext = {
   addNotification: () => {},
   closeNotification: () => {},
   notifications: [],
+  ethBalance: new BigNumber(0),
+  ethBalanceReady: false,
+  refreshBalance: () => {},
 };
 
 export const GlobalContext = createContext<IGlobalContext>(defaultGlobalContext);
@@ -42,13 +53,17 @@ export const GlobalContextProvider: React.FC = ({ children }) => {
   const [isLoading, setLoading] = useState<boolean>(false);
   const [loadingMessage, setLoadingMessage] = useState<string>("");
   const [notifications, setNotifications] = useState<SystemNotification[]>([]);
+  const [ethBalanceReady, setEthBalanceReady] = useState(false);
+  const [ethBalance, setEthBalance] = useState<BigNumber>(new BigNumber(0));
+  const { user } = useMoralis();
 
-  const addNotification = (type: NotificationType, message: string, header?: string) => {
+  const addNotification = (type: NotificationType, message: string, header?: string, keepOpen = false) => {
     const newNotification: SystemNotification = {
       id: uuidv4(),
       type,
       message,
       header,
+      keepOpen,
     };
     setNotifications([...notifications, newNotification]);
     window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
@@ -67,6 +82,53 @@ export const GlobalContextProvider: React.FC = ({ children }) => {
     }
   };
 
+  const {
+    runContractFunction,
+    isFetching,
+    isLoading: isBalanceLoading,
+  } = useWeb3Contract({
+    abi: factoryAbi.abi,
+    contractAddress: factoryAddress,
+    functionName: "getMyBalance",
+  });
+
+  const handleMoralisError = (err: string[] | Error | any) => {
+    if (Array.isArray(err)) {
+      err = err[0];
+    }
+
+    addNotification(NotificationType.ERROR, err?.message || err?.error || "" + err);
+    setEthBalanceReady(true);
+  };
+
+  const handleMoralisSuccess = (data: any) => {
+    setEthBalance(data);
+    setEthBalanceReady(true);
+  };
+
+  useEffect(() => {
+    setEthBalanceReady(!isFetching && !isLoading);
+  }, [isFetching, isBalanceLoading]);
+
+  const refreshBalance = () => {
+    if (!user?.id) {
+      return;
+    }
+    runContractFunction({
+      params: {
+        params: {
+          _token: ADDRESS_ZERO,
+        },
+      },
+      onError: handleMoralisError,
+      onSuccess: handleMoralisSuccess,
+    }).then();
+  };
+
+  useEffect(() => {
+    refreshBalance();
+  }, [user?.id]);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -77,6 +139,9 @@ export const GlobalContextProvider: React.FC = ({ children }) => {
         addNotification,
         closeNotification,
         notifications,
+        ethBalance,
+        ethBalanceReady,
+        refreshBalance,
       }}
     >
       {children}

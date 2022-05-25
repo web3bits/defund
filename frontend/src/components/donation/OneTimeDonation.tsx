@@ -9,7 +9,6 @@ import { ADDRESS_ZERO, factoryAddress } from "../../utils/FundRaiserUtils";
 import * as factoryAbi from "../../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { StyledPaper } from "../ui/StyledPaper";
 import { FundraiserDetailsData } from "../../enums/FundRaiser";
-import { useEthBalance } from "../../hooks/useEthBalance";
 
 const schema = Yup.object({
   token: Yup.string().required(),
@@ -55,8 +54,7 @@ interface OneTimeDonationProps {
 }
 
 export const OneTimeDonation = ({ fundraiser, onDonation }: OneTimeDonationProps): React.ReactElement => {
-  const { ethBalance, refreshBalance } = useEthBalance();
-  const { addNotification, setLoading, setLoadingMessage } = useGlobalContext();
+  const { addNotification, setLoading, setLoadingMessage, ethBalance, refreshBalance } = useGlobalContext();
 
   const handleMoralisError = (err: string[] | Error | any) => {
     if (Array.isArray(err)) {
@@ -80,7 +78,7 @@ export const OneTimeDonation = ({ fundraiser, onDonation }: OneTimeDonationProps
         NotificationType.ERROR,
         `You're trying to donate more than your current balance of ${Moralis.Units.FromWei(
           ethBalance.toString(10)
-        )} ETH`
+        )} ETH. Deposit more funds by clicking on your account name in navbar.`
       );
       return;
     }

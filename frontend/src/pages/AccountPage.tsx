@@ -5,10 +5,10 @@ import { useMoralis } from "react-moralis";
 import { AccountDetails } from "../components/account/AccountDetails";
 import { DepositFunds } from "../components/account/DepositFunds";
 import { WithdrawFunds } from "../components/account/WithdrawFunds";
-import { useEthBalance } from "../hooks/useEthBalance";
+import { useGlobalContext } from "../context/GlobalContext";
 
 export const AccountPage = () => {
-  const { ethBalance, refreshBalance } = useEthBalance();
+  const { ethBalance, refreshBalance } = useGlobalContext();
   const { user, chainId, network } = useMoralis();
 
   return (
