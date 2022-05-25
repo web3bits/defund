@@ -1,10 +1,10 @@
-import BN from "bn.js";
 import { FundraiserType } from "./FundRaiserType";
 import { FundRaiserCategory } from "./FundRaiserCategory";
 import { FundRaiserStatus } from "./FundRaiserStatus";
+import BigNumber from "bignumber.js";
 
 export interface FundraiserDetailsData {
-  id: BN;
+  id: BigNumber;
   owner: string;
   type: FundraiserType;
   category: FundRaiserCategory;
@@ -15,5 +15,5 @@ export interface FundraiserDetailsData {
   defaultImage: number;
   name: string;
   status: FundRaiserStatus;
-  ethBalance: BN;
+  ethBalance: BigNumber;
 }

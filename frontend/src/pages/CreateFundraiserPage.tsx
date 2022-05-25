@@ -116,7 +116,7 @@ const formFields: GenericFormField[] = [
 ];
 
 export const CreateFundraiserPage = () => {
-  const { addNotification, setLoading } = useGlobalContext();
+  const { addNotification, setLoading, setLoadingMessage } = useGlobalContext();
   const { runContractFunction, isFetching, isLoading } = useWeb3Contract({
     contractAddress: factoryAddress,
     functionName: "createFundraiser",
@@ -131,22 +131,26 @@ export const CreateFundraiserPage = () => {
 
     addNotification(NotificationType.ERROR, err?.message || err?.error || "" + err);
     setLoading(false);
+    setLoadingMessage("");
   };
 
-  const handleMoralisSuccess = () => {
-    addNotification(
-      NotificationType.SUCCESS,
-      "The fundraiser has been created! Please wait for Blockchain confirmation..."
-    );
+  const handleMoralisSuccess = async (tx: any) => {
+    setLoadingMessage("Waiting for transaction confirmation...");
+    await tx?.wait(1);
+    addNotification(NotificationType.SUCCESS, "The fundraiser has been created!");
     setLoading(false);
+    setLoadingMessage("");
   };
 
   const onSubmit = async (values: any) => {
     setLoading(true);
 
     try {
+      setLoadingMessage("Saving data to IPFS...");
       const fileName = `${uuidv4()}.json`;
       const descriptionCid = await storeAsJson(values.fundraiserDescription, fileName);
+
+      setLoadingMessage("Executing transaction...");
       await runContractFunction({
         params: {
           params: {

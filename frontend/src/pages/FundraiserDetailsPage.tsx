@@ -34,7 +34,7 @@ export const FundraiserDetailsPage = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
+  const refreshFundraiserDetails = () => {
     runContractFunction({
       params: {
         contractAddress: address,
@@ -42,6 +42,10 @@ export const FundraiserDetailsPage = () => {
       onError: handleMoralisError,
       onSuccess: handleMoralisSuccess,
     }).then();
+  };
+
+  useEffect(() => {
+    refreshFundraiserDetails();
   }, [address]);
 
   useEffect(() => {
@@ -50,7 +54,7 @@ export const FundraiserDetailsPage = () => {
 
   return (
     <>
-      <FundraiserDetails data={data} user={user} />
+      <FundraiserDetails data={data} user={user} refreshFundraiserDetails={refreshFundraiserDetails} />
     </>
   );
 };
