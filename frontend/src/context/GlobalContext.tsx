@@ -55,7 +55,7 @@ export const GlobalContextProvider: React.FC = ({ children }) => {
   const [notifications, setNotifications] = useState<SystemNotification[]>([]);
   const [ethBalanceReady, setEthBalanceReady] = useState(false);
   const [ethBalance, setEthBalance] = useState<BigNumber>(new BigNumber(0));
-  const { user } = useMoralis();
+  const { user, isWeb3Enabled } = useMoralis();
 
   const addNotification = (type: NotificationType, message: string, header?: string, keepOpen = false) => {
     const newNotification: SystemNotification = {
@@ -126,8 +126,10 @@ export const GlobalContextProvider: React.FC = ({ children }) => {
   };
 
   useEffect(() => {
-    refreshBalance();
-  }, [user?.id]);
+    if (isWeb3Enabled) {
+      refreshBalance();
+    }
+  }, [isWeb3Enabled, user?.id]);
 
   return (
     <GlobalContext.Provider
