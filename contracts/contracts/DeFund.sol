@@ -2,6 +2,7 @@
 pragma solidity ^0.8.7;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "./DeFundModel.sol";
 import "./DeFundFactory.sol";
 import "./RateConverter.sol";
 
@@ -13,8 +14,8 @@ contract DeFund {
     /* Immutable state variables */
     uint public immutable i_id;
     address public immutable i_owner;
-    DeFundFactory.FundraiserType public immutable i_type;
-    DeFundFactory.FundraiserCategory public immutable i_category;
+    DeFundModel.FundraiserType public immutable i_type;
+    DeFundModel.FundraiserCategory public immutable i_category;
     uint public immutable i_endDate;
     uint public immutable i_goalAmount;
     DeFundFactory private immutable i_factory;
@@ -24,7 +25,7 @@ contract DeFund {
     string[] public s_images;
     uint public s_defaultImage;
     string public s_name;
-    DeFundFactory.FundraiserStatus public s_status;
+    DeFundModel.FundraiserStatus public s_status;
     mapping(address => uint) public s_balances;
     mapping(address => mapping(address => uint)) public s_donors;
 
@@ -38,8 +39,8 @@ contract DeFund {
     constructor(
         uint _id,
         address _owner,
-        DeFundFactory.FundraiserType _type,
-        DeFundFactory.FundraiserCategory _category,
+        DeFundModel.FundraiserType _type,
+        DeFundModel.FundraiserCategory _category,
         string memory _name,
         string memory _initialDescription,
         uint _endDate,
@@ -54,12 +55,12 @@ contract DeFund {
         i_factory = DeFundFactory(msg.sender);
         i_endDate = _endDate;
         i_goalAmount = _goalAmount; // in USD cents! 1 USD = 100 _goalAmount
-        s_status = DeFundFactory.FundraiserStatus.ACTIVE;
+        s_status = DeFundModel.FundraiserStatus.ACTIVE;
     }
 
     /* Donate funds to the fundraiser */
     function makeDonation(address _donorAddress, uint _amount, address _tokenAddress) external payable returns (bool) {
-        require(s_status == DeFundFactory.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is not active");
+        require(s_status == DeFundModel.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is not active");
         require(_amount > 0, "Cannot deposit 0");
         if (_tokenAddress == address(0)) {
             // ETH deposit
@@ -81,7 +82,7 @@ contract DeFund {
     /* Withdraw funds from the contract */
     function withdrawFunds(uint _amount, address _tokenAddress) public onlyOwner {
         require(_amount > 0, "Cannot withdraw 0");
-        require(s_status != DeFundFactory.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is active");
+        require(s_status != DeFundModel.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is active");
         uint currentBalance = s_balances[_tokenAddress];
         require(_amount <= currentBalance, "Sorry, can't withdraw more than total donations");
 
@@ -119,24 +120,24 @@ contract DeFund {
 
     /* Close fundraiser and revert all donations */
     function closeAndRevertDonations() public onlyOwner {
-        require(s_status == DeFundFactory.FundraiserStatus.ACTIVE, "You can only close active fundraisers");
+        require(s_status == DeFundModel.FundraiserStatus.ACTIVE, "You can only close active fundraisers");
         // TODO return donations
-        s_status = DeFundFactory.FundraiserStatus.CLOSED;
+        s_status = DeFundModel.FundraiserStatus.CLOSED;
     }
 
     /* Get all details */
     function getAllDetails() public view returns (
         uint id,
         address owner,
-        DeFundFactory.FundraiserType fType,
-        DeFundFactory.FundraiserCategory category,
+        DeFundModel.FundraiserType fType,
+        DeFundModel.FundraiserCategory category,
         uint endDate,
         uint goalAmount,
         string[] memory descriptions,
         string[] memory images,
         uint defaultImage,
         string memory name,
-        DeFundFactory.FundraiserStatus status,
+        DeFundModel.FundraiserStatus status,
         uint balances
     ) {
         return (
@@ -159,11 +160,8 @@ contract DeFund {
         if (i_goalAmount > 0) {
             uint totalDonationsInCents = s_balances[address(0)].getConversionRate(i_factory.s_priceFeed());
             if (totalDonationsInCents >= i_goalAmount) {
-                s_status = DeFundFactory.FundraiserStatus.FULLY_FUNDED;
+                s_status = DeFundModel.FundraiserStatus.FULLY_FUNDED;
             }
         }
     }
-
-    // TODO recurring
-
 }

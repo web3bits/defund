@@ -5,10 +5,16 @@ import { NotificationType, useGlobalContext } from "../../context/GlobalContext"
 import { ADDRESS_ZERO, factoryAddress } from "../../utils/FundRaiserUtils";
 import * as factoryAbi from "../../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { StyledPaper } from "../ui/StyledPaper";
-import BN from "bn.js";
+import BigNumber from "bignumber.js";
 
-export const WithdrawFunds = ({ ethBalance, address }: { ethBalance: BN; address: string }): JSX.Element | null => {
-  const { addNotification, setLoading } = useGlobalContext();
+interface WithdrawFundsProps {
+  ethBalance: BigNumber;
+  address: string;
+  onWithdrawal?: () => void;
+}
+
+export const WithdrawFunds = ({ ethBalance, address, onWithdrawal }: WithdrawFundsProps): JSX.Element | null => {
+  const { addNotification, setLoading, setLoadingMessage } = useGlobalContext();
 
   if (!address || !ethBalance) {
     return null;
@@ -20,15 +26,10 @@ export const WithdrawFunds = ({ ethBalance, address }: { ethBalance: BN; address
     }
 
     addNotification(NotificationType.ERROR, err?.message || err?.error || "" + err);
-    setLoading(false);
   };
 
   const handleMoralisSuccess = () => {
-    addNotification(
-      NotificationType.SUCCESS,
-      "Withdrawal is being processed! Please wait for Blockchain confirmation..."
-    );
-    setLoading(false);
+    addNotification(NotificationType.SUCCESS, "Withdrawal has been successful!");
   };
 
   const onClick = async () => {
@@ -44,10 +45,18 @@ export const WithdrawFunds = ({ ethBalance, address }: { ethBalance: BN; address
         },
       };
       try {
-        await (Moralis as any).executeFunction(options);
+        const tx = await (Moralis as any).executeFunction(options);
+        setLoadingMessage("Waiting for transaction confirmation...");
+        await tx.wait(1);
         handleMoralisSuccess();
       } catch (e: any) {
         handleMoralisError(e);
+      } finally {
+        setLoading(false);
+        setLoadingMessage("");
+        if (typeof onWithdrawal === "function") {
+          onWithdrawal();
+        }
       }
     } catch (e: any) {
       console.error(e);
