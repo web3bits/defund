@@ -82,7 +82,6 @@ contract DeFund {
     /* Withdraw funds from the contract */
     function withdrawFunds(uint _amount, address _tokenAddress) public onlyOwner {
         require(_amount > 0, "Cannot withdraw 0");
-        require(s_status != DeFundModel.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is active");
         uint currentBalance = s_balances[_tokenAddress];
         require(_amount <= currentBalance, "Sorry, can't withdraw more than total donations");
 
