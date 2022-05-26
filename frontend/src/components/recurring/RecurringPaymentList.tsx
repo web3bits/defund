@@ -11,6 +11,7 @@ import { RecurringPaymentStatusBadge } from "../ui/RecurringPaymentStatusBadge";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import { CancelRecurringPaymentButton } from "./CancelRecurringPaymentButton";
+import { NiceTimeInterval } from "../ui/NiceTimeInterval";
 
 dayjs.extend(relativeTime);
 
@@ -44,7 +45,7 @@ export const RecurringPaymentList = ({ data, onCancel, isLoading }: RecurringPay
       {data.length > 0 && (
         <>
           {data.map((item: RecurringPayment, _idx: number) => (
-            <StyledPaper key={_idx}>
+            <StyledPaper key={_idx} sx={{ mb: 3 }}>
               <Grid container alignItems="flex-start" spacing={4}>
                 <Grid item xs={3} className={classes.label}>
                   <strong>Status:</strong>
@@ -71,7 +72,7 @@ export const RecurringPaymentList = ({ data, onCancel, isLoading }: RecurringPay
                   <strong>Frequency:</strong>
                 </Grid>
                 <Grid item xs={9}>
-                  Every {item.intervalHours} hour(s)
+                  <NiceTimeInterval hours={item.intervalHours} />
                 </Grid>
                 <Grid item xs={3} className={classes.label}>
                   <strong>Last execution:</strong>
