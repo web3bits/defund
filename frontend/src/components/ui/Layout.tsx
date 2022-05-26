@@ -7,6 +7,7 @@ import { Notifications } from "./Notifications";
 import { useMoralis } from "react-moralis";
 import { makeStyles } from '@mui/styles';
 import { RequireAuth } from "./RequireAuth";
+import { useLocation } from "react-router-dom";
 import Image from '../../images/shokunin_World_Map.svg'; // Import using relative path
 import { keyframes } from '@mui/system';
 
@@ -25,8 +26,11 @@ const useStyles: any = makeStyles((theme: any) => ({
   darkBg: {
     background: theme.palette.primary.main,
   },
-  lightBg: {
-    background: theme.palette.primary.light,
+  // lightBg: {
+  //   background: theme.palette.primary.light,
+  // },
+  secondaryBg: {
+    background: theme.palette.secondary.main,
   },
   "@keyframes animate": {
     // "0%": {
@@ -51,6 +55,11 @@ const useStyles: any = makeStyles((theme: any) => ({
     backgroundSize: "auto 100%",
     margin: '0 auto',
     animation: `$animate 100s linear infinite`
+  },
+  container: {
+    minHeight: 'calc(100vh - 130px)',
+    width: '100%',
+    margin: '0 auto',
   }
 }));
 
@@ -68,23 +77,32 @@ const useStyles: any = makeStyles((theme: any) => ({
 
 export const Layout = () => {
 
+  const router = useLocation();
+  const requireAuth = router.pathname !== "/";
   const { isAuthenticated } = useMoralis();
   const { isLoading } = useGlobalContext();
   const classes = useStyles();
 
   return (
-    <div className={isAuthenticated ? classes.lightBg : classes.darkBg}>
+    // <div className={isAuthenticated ? classes.lightBg : classes.darkBg}>
+    <div className={isAuthenticated ? classes.secondaryBg : classes.darkBg}>
       <Navigation />
-      <div className={classes.mapContainer}>
+      <div className={!isAuthenticated ? classes.mapContainer : classes.container}>
         <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
           <CircularProgress color="inherit" />
         </Backdrop>
         <Notifications />
-        <RequireAuth>
+        {requireAuth ?
+          <RequireAuth>
+            <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
+              <Outlet />
+            </Container>
+          </RequireAuth>
+          :
           <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
             <Outlet />
           </Container>
-        </RequireAuth>
+        }
       </div>
       <Footer />
     </div>

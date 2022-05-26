@@ -9,7 +9,7 @@ export const Footer = () => {
             <Box sx={{ width: '100%', height: "66px", bgcolor: "primary.dark", display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center" }}>
                 <Container>
                     <Typography component="div" variant="subtitle1" color="primary.light" gutterBottom>
-                        ©2022 DeFund. All rights reserved
+                        DeFund is a decentralized, and autonomous platform made with &#128155;
                     </Typography>
                 </Container>
             </Box>

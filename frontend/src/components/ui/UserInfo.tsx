@@ -1,4 +1,4 @@
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, Popover, Box, Modal } from "@mui/material";
 import { createStyles, makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useChain, useMoralis } from "react-moralis";
@@ -9,6 +9,24 @@ import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 
 export const UserInfo = () => {
+
+  // const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  // const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   setAnchorEl(event.currentTarget);
+  // };
+
+  // const handleClose = () => {
+  //   setAnchorEl(null);
+  // };
+
+  // const open = Boolean(anchorEl);
+  // const id = open ? 'simple-popover' : undefined;
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const {
     authenticate,
     isAuthenticated,
@@ -48,6 +66,29 @@ export const UserInfo = () => {
         height: "30px",
         marginRight: "1rem",
       },
+      account: {
+        border: "1px solid #fff",
+        borderRadius: "3px",
+        display: "flex",
+        height: "30px",
+        alignItems: "center",
+        padding: "5px",
+      },
+      modal: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 600,
+        height: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        p: 4,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "centre",
+        justifyContent: "center",
+      },
     })
   );
 
@@ -67,7 +108,7 @@ export const UserInfo = () => {
       background: theme.palette.primary.dark,
       color: theme.palette.primary.light,
       "&:hover": {
-        backgroundColor: theme.palette.error.dark
+        backgroundColor: theme.palette.primary.dark
       },
     },
     lightBg: {
@@ -113,20 +154,53 @@ export const UserInfo = () => {
     );
   }
 
+  // const style = {
+  //   position: 'absolute' as 'absolute',
+  //   top: '50%',
+  //   left: '50%',
+  //   transform: 'translate(-50%, -50%)',
+  //   width: 400,
+  //   bgcolor: 'background.paper',
+  //   border: '2px solid #000',
+  //   boxShadow: 24,
+  //   p: 4,
+  // };
+
+  
   return (
     <>
       {isAuthenticated && user ? (
         <>
-          <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />{" "}
-          <Link component={RouterLink} to="account" color="secondary">
-            {user.get("username")}
-          </Link>
-          <button onClick={logoutHandler} className={btnClasses.darkBg + ' ' + btnClasses.root}>
-            LOGOUT
-          </button>
+          {/* <Button variant="outlined"> */}
+          <div className={classes.account}>
+            <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />
+            <Link component={RouterLink} to="/account" mr="15px" sx={{ color: isAuthenticated && "primary.light", textDecoration: "none" }}>
+              Account
+            </Link>
+          </div>
+          {/* </Button> */}
+          <div onClick={handleOpen}>
+            ☰
+          </div>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <div className={classes.modal}>
+              <Link component={RouterLink} to="/account" sx={{ color: isAuthenticated && "primary.light", textDecoration: "none" }}>
+                {user.get("username")}
+              </Link>
+              <button onClick={logoutHandler} className={btnClasses.darkBg + " " + btnClasses.root}>
+                LOGOUT
+              </button>
+            </div>
+          </Modal>
+          
         </>
       ) : (
-        <button onClick={loginHandler} className={btnClasses.lightBg + ' ' + btnClasses.root}>
+        <button onClick={loginHandler} className={btnClasses.lightBg + " " + btnClasses.root}>
           LOGIN
         </button>
       )}

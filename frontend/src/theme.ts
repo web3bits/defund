@@ -18,7 +18,6 @@ const theme = createTheme({
     },
     secondary: {
       main: "#EC6C4D",
-      
     },
     error: {
       main: red.A400,

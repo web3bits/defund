@@ -22,34 +22,30 @@ export const Navigation = () => {
     },
     lightBg: {
       background: theme.palette.primary.light,
+    },
+    logoOrange: {
+      color: theme.palette.secondary,
+    },
+    logoLight: {
+      color: theme.palette.primary.light,
     }
   }));
 
   const classes = useStyles();
 
-  const {
-    authenticate,
-    isAuthenticated,
-    user,
-    logout,
-    isAuthenticating,
-    isInitialized,
-    authError,
-    hasAuthError,
-    isWeb3Enabled,
-  } = useMoralis();
+  const { isAuthenticated } = useMoralis();
 
   return (
-    <AppBar position="static" elevation={0}>
+    <AppBar position="static" color={isAuthenticated ? "secondary" : "primary"} elevation={0}>
       <Toolbar>
         <nav className={classes.root}>
-          <Link component={RouterLink} variant="h5" color="secondary.main" to="/" sx={{ flexGrow: 1, marginRight: "auto", textDecoration: 'none', fontWeight: 'bold', maxWidth: "80px", "&:hover": { color: 'primary.light'} }}>
+          <Link component={RouterLink} variant="h5" to="/" sx={{ flexGrow: 1, marginRight: "auto", textDecoration: 'none', fontWeight: 'bold', maxWidth: "80px", "&:hover": { color: 'primary.light' }, color: !isAuthenticated ? 'secondary.main': 'primary.light' }}>
             DeFund
           </Link>
-          <Link component={RouterLink} variant="button" color="primary.light" to="/create" sx={{ my: 1, textDecoration: 'none', "&:hover": {color: 'secondary.main'} }}>
+          <Link component={RouterLink} variant="button" color="primary.light" to="/create" sx={{ my: 1, textDecoration: 'none', "&:hover": { color: !isAuthenticated ? 'secondary.main' : 'primary.light'}}}>
             Create a fundraiser
           </Link>
-          <Link component={RouterLink} variant="button" color="primary.light" to="/fundraisers" sx={{ my: 1, mx: 3.5, textDecoration: 'none', "&:hover": {color: 'secondary.main'} }}>
+          <Link component={RouterLink} variant="button" color="primary.light" to="/fundraisers" sx={{ my: 1, mx: 3.5, textDecoration: 'none', "&:hover": { color: !isAuthenticated ? 'secondary.main' : 'primary.light' }}}>
             Active fundraisers
           </Link>
           <UserInfo />
