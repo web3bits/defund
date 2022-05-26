@@ -8,10 +8,11 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./DeFundModel.sol";
 import "./DeFund.sol";
 
-error DeFundFactory__deposit__zero_deposit();
-error DeFundFactory__deposit__less_than_declared();
-error DeFundFactory__deposit__token_not_allowed();
-error DeFundFactory__not_implemented();
+    error DeFundFactory__deposit__zero_deposit();
+    error DeFundFactory__deposit__less_than_declared();
+    error DeFundFactory__deposit__token_not_allowed();
+    error DeFundFactory__recurring__only_owner();
+    error DeFundFactory__not_implemented();
 
 contract DeFundFactory is KeeperCompatibleInterface, Ownable {
     /* State variables */
@@ -74,7 +75,7 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
         s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
 
         if (_tokenAddress == address(0)) {
-            (bool success, ) = msg.sender.call{value: _amount}("");
+            (bool success,) = msg.sender.call{value : _amount}("");
             require(success, "Transfer failed.");
         } else {
             // TODO
@@ -155,7 +156,7 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
         s_userBalances[msg.sender][_tokenAddress] = currentBalance - _amount;
 
         if (_tokenAddress == address(0)) {
-            bool success = DeFund(_fundraiserAddress).makeDonation{value: _amount}(msg.sender, _amount, _tokenAddress);
+            bool success = DeFund(_fundraiserAddress).makeDonation{value : _amount}(msg.sender, _amount, _tokenAddress);
             require(success, "Transfer failed.");
         } else {
             // TODO
@@ -166,6 +167,15 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
     /* Get user balance */
     function getMyBalance(address _token) public view returns (uint balance) {
         return s_userBalances[msg.sender][_token];
+    }
+
+    /* Get user's recurring payments */
+    function getMyRecurringPayments() public view returns (DeFundModel.RecurringPaymentDisposition[] memory recurringPayments) {
+        recurringPayments = new DeFundModel.RecurringPaymentDisposition[](s_recurringPaymentsByOwner[msg.sender].length);
+        for (uint i = 0; i < s_recurringPaymentsByOwner[msg.sender].length; i++) {
+            recurringPayments[i] = s_recurringPayments[s_recurringPaymentsByOwner[msg.sender][i]];
+        }
+        return recurringPayments;
     }
 
     /* Create a recurring payment */
@@ -191,7 +201,21 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
         return recurringPaymentId;
     }
 
+    /* Create a recurring payment */
+    function cancelRecurringPayment(
+        uint _id
+    ) external {
+        if (msg.sender != s_recurringPayments[_id].owner) {
+            revert DeFundFactory__deposit__token_not_allowed();
+        }
+
+        if (s_recurringPayments[_id].status == DeFundModel.RecurringPaymentStatus.ACTIVE) {
+            s_recurringPayments[_id].status = DeFundModel.RecurringPaymentStatus.CANCELLED;
+        }
+    }
+
     /* Execute recurring payment - called internally on upkeep */
+    // TODO fix reentrancy vulnerability - multiple upkeeps at the same time
     function executeRecurringPayment(uint _id) internal {
         uint executorBalance = s_userBalances[s_recurringPayments[_id].owner][s_recurringPayments[_id].tokenAddress];
         if (executorBalance >= s_recurringPayments[_id].amount) {
@@ -199,7 +223,7 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
 
             DeFund fundraiser = DeFund(s_recurringPayments[_id].target);
             if (fundraiser.s_status() == DeFundModel.FundraiserStatus.ACTIVE && fundraiser.i_type() == DeFundModel.FundraiserType.RECURRING_DONATION) {
-                fundraiser.makeDonation{value: s_recurringPayments[_id].amount}(s_recurringPayments[_id].owner, s_recurringPayments[_id].amount, s_recurringPayments[_id].tokenAddress);
+                fundraiser.makeDonation{value : s_recurringPayments[_id].amount}(s_recurringPayments[_id].owner, s_recurringPayments[_id].amount, s_recurringPayments[_id].tokenAddress);
             }
         }
         s_recurringPayments[_id].lastExecution = block.timestamp;
@@ -214,7 +238,6 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
         bool hasFundraisersAndPayments = s_counterFundraisers > 0 && s_counterRecurringPayments > 0;
 
         // TODO optimize - return IDs of payments in performData
-//        bool hasPaymentsToExecute = RecurringPayments.hasPaymentsToExecute(s_counterRecurringPayments, s_recurringPayments, s_userBalances);
         bool hasPaymentsToExecute = false;
         for (uint id = 0; id < s_counterRecurringPayments; id++) {
             if (s_recurringPayments[id].status != DeFundModel.RecurringPaymentStatus.ACTIVE) {

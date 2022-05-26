@@ -12,7 +12,7 @@ import { extractDetails } from "../utils/FundRaiserUtils";
 export const FundraiserDetailsPage = () => {
   const { address } = useParams();
   const { addNotification, setLoading } = useGlobalContext();
-  const { user } = useMoralis();
+  const { user, isWeb3Enabled } = useMoralis();
   const [data, setData] = useState<FundraiserDetailsData>();
 
   const { runContractFunction, isFetching, isLoading } = useWeb3Contract({
@@ -45,8 +45,10 @@ export const FundraiserDetailsPage = () => {
   };
 
   useEffect(() => {
-    refreshFundraiserDetails();
-  }, [address]);
+    if (isWeb3Enabled) {
+      refreshFundraiserDetails();
+    }
+  }, [isWeb3Enabled, address]);
 
   useEffect(() => {
     setLoading(isFetching || isLoading);
@@ -54,7 +56,7 @@ export const FundraiserDetailsPage = () => {
 
   return (
     <>
-      <FundraiserDetails data={data} user={user} refreshFundraiserDetails={refreshFundraiserDetails} />
+      <FundraiserDetails data={data} user={user} refreshFundraiserDetails={refreshFundraiserDetails} isLoading={isFetching || isLoading} />
     </>
   );
 };

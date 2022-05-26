@@ -4,7 +4,7 @@ import Moralis from "moralis";
 import { FundraiserDetailsData } from "../../enums/FundRaiser";
 import { StyledPaper } from "../ui/StyledPaper";
 import Typography from "@mui/material/Typography";
-import { Alert } from "@mui/material";
+import { Alert, Skeleton } from "@mui/material";
 import { sameAddress } from "../../utils/FundRaiserUtils";
 import { FundraiserType } from "../../enums/FundRaiserType";
 import { OneTimeDonation } from "../donation/OneTimeDonation";
@@ -16,9 +16,13 @@ interface FundraiserDetailsProps {
   user: Moralis.User | null;
   data?: FundraiserDetailsData;
   refreshFundraiserDetails?: () => void;
+  isLoading: boolean;
 }
 
-export const FundraiserDetails = ({ data, user, refreshFundraiserDetails }: FundraiserDetailsProps) => {
+export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoading }: FundraiserDetailsProps) => {
+  if (isLoading) {
+    return <Skeleton variant="rectangular" height={20} />;
+  }
   if (!data) {
     return <Alert severity="error">Sorry, we couldn't fetch this fundraiser's details :(</Alert>;
   }
