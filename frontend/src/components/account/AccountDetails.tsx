@@ -5,6 +5,8 @@ import Moralis from "moralis";
 import { MoralisContextValue } from "react-moralis";
 import { StyledPaper } from "../ui/StyledPaper";
 import BigNumber from "bignumber.js";
+import Link from "@mui/material/Link";
+import { Link as RouterLink } from "react-router-dom";
 
 interface AccountDetailsProps {
   user: Moralis.User | null;
@@ -18,6 +20,9 @@ export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDe
     createStyles({
       label: {
         textAlign: "right",
+      },
+      payments: {
+        textAlign: "center",
       },
     })
   );
@@ -57,6 +62,12 @@ export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDe
         </Grid>
         <Grid item xs={5}>
           <code>{Moralis.Units.FromWei(ethBalance.toString(10))} ETH</code>
+        </Grid>
+
+        <Grid item xs={12} className={classes.payments}>
+          <Link color="secondary" component={RouterLink} to="/recurring">
+            My recurring payments
+          </Link>
         </Grid>
       </Grid>
     </StyledPaper>

@@ -30,6 +30,10 @@ export const ContentImage = ({ cid }: ContentImageProps) => {
           setImage(undefined);
         }
       })
+      .catch((err: any) => {
+        console.error(err);
+        setImage(undefined);
+      })
       .finally(() => setLoading(false));
   }, [cid]);
 
