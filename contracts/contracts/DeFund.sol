@@ -7,6 +7,7 @@ import "./DeFundFactory.sol";
 import "./RateConverter.sol";
 
 error DeFund__not_implemented();
+error DeFund__after_endDate();
 
 contract DeFund {
     using RateConverter for uint256;
@@ -62,6 +63,10 @@ contract DeFund {
     function makeDonation(address _donorAddress, uint _amount, address _tokenAddress) external payable returns (bool) {
         require(s_status == DeFundModel.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is not active");
         require(_amount > 0, "Cannot deposit 0");
+        if (i_endDate > 0 && block.timestamp > i_endDate) {
+            revert DeFund__after_endDate();
+        }
+
         if (_tokenAddress == address(0)) {
             // ETH deposit
             require(msg.value == _amount);
@@ -82,7 +87,6 @@ contract DeFund {
     /* Withdraw funds from the contract */
     function withdrawFunds(uint _amount, address _tokenAddress) public onlyOwner {
         require(_amount > 0, "Cannot withdraw 0");
-        require(s_status != DeFundModel.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is active");
         uint currentBalance = s_balances[_tokenAddress];
         require(_amount <= currentBalance, "Sorry, can't withdraw more than total donations");
 

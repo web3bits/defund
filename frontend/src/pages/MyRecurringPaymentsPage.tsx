@@ -2,22 +2,21 @@ import "date-fns";
 import * as React from "react";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import { NotificationType, useGlobalContext } from "../context/GlobalContext";
-import * as fundraiserAbi from "../artifacts/contracts/DeFund.sol/DeFund.json";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { FundraiserDetails } from "../components/fundraiser/FundraiserDetails";
-import { FundraiserDetailsData } from "../enums/FundRaiser";
-import { extractDetails } from "../utils/FundRaiserUtils";
+import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
+import { extractRecurringPayments, factoryAddress } from "../utils/FundRaiserUtils";
+import { RecurringPayment } from "../enums/RecurringPayment";
+import { RecurringPaymentList } from "../components/recurring/RecurringPaymentList";
 
-export const FundraiserDetailsPage = () => {
-  const { address } = useParams();
+export const MyRecurringPaymentsPage = () => {
   const { addNotification, setLoading } = useGlobalContext();
-  const { user, isWeb3Enabled } = useMoralis();
-  const [data, setData] = useState<FundraiserDetailsData>();
+  const { user, isWeb3Enabled, isAuthenticated, isInitialized } = useMoralis();
+  const [data, setData] = useState<RecurringPayment[]>([]);
 
   const { runContractFunction, isFetching, isLoading } = useWeb3Contract({
-    abi: fundraiserAbi.abi,
-    functionName: "getAllDetails",
+    abi: factoryAbi.abi,
+    functionName: "getMyRecurringPayments",
+    contractAddress: factoryAddress,
   });
 
   const handleMoralisError = (err: string[] | Error | any) => {
@@ -30,15 +29,12 @@ export const FundraiserDetailsPage = () => {
   };
 
   const handleMoralisSuccess = (successData: any) => {
-    setData(extractDetails(successData, address));
+    setData(extractRecurringPayments(successData));
     setLoading(false);
   };
 
-  const refreshFundraiserDetails = () => {
+  const refreshData = () => {
     runContractFunction({
-      params: {
-        contractAddress: address,
-      },
       onError: handleMoralisError,
       onSuccess: handleMoralisSuccess,
     }).then();
@@ -46,22 +42,21 @@ export const FundraiserDetailsPage = () => {
 
   useEffect(() => {
     if (isWeb3Enabled) {
-      refreshFundraiserDetails();
+      refreshData();
     }
-  }, [isWeb3Enabled, address]);
+  }, [isWeb3Enabled, user?.get("ethAddress")]);
 
   useEffect(() => {
     setLoading(isFetching || isLoading);
   }, [isFetching, isLoading]);
 
+  if (!(isWeb3Enabled && isAuthenticated && isInitialized)) {
+    return <></>;
+  }
+
   return (
     <>
-      <FundraiserDetails
-        data={data}
-        user={user}
-        refreshFundraiserDetails={refreshFundraiserDetails}
-        isLoading={isFetching || isLoading}
-      />
+      <RecurringPaymentList data={data} user={user} onCancel={refreshData} isLoading={isFetching || isLoading} />
     </>
   );
 };

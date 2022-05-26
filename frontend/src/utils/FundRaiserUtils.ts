@@ -2,6 +2,8 @@ import { FundRaiserStatus } from "../enums/FundRaiserStatus";
 import { FundraiserType } from "../enums/FundRaiserType";
 import { FundraiserDetailsData } from "../enums/FundRaiser";
 import { FundRaiserCategory } from "../enums/FundRaiserCategory";
+import { RecurringPayment } from "../enums/RecurringPayment";
+import { RecurringPaymentStatus } from "../enums/RecurringPaymentStatus";
 
 const FUNDRAISER_TYPES: any = {};
 FUNDRAISER_TYPES[FundraiserType.LOAN] = "Loan";
@@ -46,5 +48,28 @@ export const extractDetails = (data: any, address = ""): FundraiserDetailsData |
   } catch (e: any) {
     console.error(e);
     return undefined;
+  }
+};
+
+export const extractRecurringPayments = (data: any): RecurringPayment[] => {
+  console.log("extractRecurringPayments", data);
+  if (!data || !Array.isArray(data) || data?.length === 0) {
+    return [];
+  }
+
+  try {
+    return data.map((item: any) => ({
+      id: item[0],
+      owner: item[1],
+      target: item[2],
+      tokenAddress: item[3],
+      amount: item[4],
+      intervalHours: Number(item[5]),
+      lastExecution: new Date(1000 * item[6].toNumber()),
+      status: item[7] as RecurringPaymentStatus,
+    }));
+  } catch (e: any) {
+    console.error(e);
+    return [];
   }
 };

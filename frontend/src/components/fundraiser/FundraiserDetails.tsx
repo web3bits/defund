@@ -4,24 +4,31 @@ import Moralis from "moralis";
 import { FundraiserDetailsData } from "../../enums/FundRaiser";
 import { StyledPaper } from "../ui/StyledPaper";
 import Typography from "@mui/material/Typography";
-import { Alert } from "@mui/material";
+import { Alert, Skeleton } from "@mui/material";
 import { sameAddress } from "../../utils/FundRaiserUtils";
 import { FundraiserType } from "../../enums/FundRaiserType";
 import { OneTimeDonation } from "../donation/OneTimeDonation";
 import { ContentMarkdown } from "../ipfs-content/ContentMarkdown";
 import { ContentImage } from "../ipfs-content/ContentImage";
 import { CreateRecurringDonation } from "../donation/CreateRecurringDonation";
+import { FundraiserWithdrawFunds } from "./FundraiserWithdrawFunds";
 
 interface FundraiserDetailsProps {
   user: Moralis.User | null;
   data?: FundraiserDetailsData;
   refreshFundraiserDetails?: () => void;
+  isLoading: boolean;
 }
 
-export const FundraiserDetails = ({ data, user, refreshFundraiserDetails }: FundraiserDetailsProps) => {
+export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoading }: FundraiserDetailsProps) => {
+  if (isLoading) {
+    return <Skeleton variant="rectangular" height={200} />;
+  }
   if (!data) {
     return <Alert severity="error">Sorry, we couldn't fetch this fundraiser's details :(</Alert>;
   }
+
+  const isOwner = sameAddress(data.owner, user?.get("ethAddress"));
 
   return (
     <>
@@ -29,7 +36,7 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails }: Fund
         <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
           {data.name}
         </Typography>
-        {sameAddress(data.owner, user?.get("ethAddress")) && <Alert>Looks like this is your fundraiser!</Alert>}
+        {isOwner && <Alert>Looks like this is your fundraiser!</Alert>}
         {data.descriptions?.length > 0 && (
           <>
             {data.descriptions.map((item: string, _idx: number) => (
@@ -58,6 +65,9 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails }: Fund
       {data.type !== FundraiserType.LOAN && <OneTimeDonation fundraiser={data} onDonation={refreshFundraiserDetails} />}
       {data.type === FundraiserType.RECURRING_DONATION && (
         <CreateRecurringDonation fundraiser={data} onDonation={refreshFundraiserDetails} />
+      )}
+      {isOwner && data.ethBalance.gt(0) && (
+        <FundraiserWithdrawFunds fundraiser={data!} user={user!} onWithdrawal={refreshFundraiserDetails} />
       )}
     </>
   );

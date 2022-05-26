@@ -31,6 +31,10 @@ export const ContentMarkdown = ({ cid }: ContentMarkdownProps) => {
           setContent("");
         }
       })
+      .catch((err: any) => {
+        console.error(err);
+        setContent("");
+      })
       .finally(() => setLoading(false));
   }, [cid]);
 
