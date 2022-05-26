@@ -21,7 +21,7 @@ interface FundraiserDetailsProps {
 
 export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoading }: FundraiserDetailsProps) => {
   if (isLoading) {
-    return <Skeleton variant="rectangular" height={20} />;
+    return <Skeleton variant="rectangular" height={200} />;
   }
   if (!data) {
     return <Alert severity="error">Sorry, we couldn't fetch this fundraiser's details :(</Alert>;

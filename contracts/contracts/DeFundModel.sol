@@ -31,6 +31,7 @@ library DeFundModel {
     }
 
     struct RecurringPaymentDisposition {
+        uint id;
         address owner;
         address target;
         address tokenAddress;

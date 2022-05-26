@@ -187,6 +187,7 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
     ) external returns (uint recurringPaymentId) {
         recurringPaymentId = s_counterRecurringPayments;
         s_counterRecurringPayments = s_counterRecurringPayments + 1;
+        s_recurringPayments[recurringPaymentId].id = recurringPaymentId;
         s_recurringPayments[recurringPaymentId].owner = msg.sender;
         s_recurringPayments[recurringPaymentId].target = _targetFundraiser;
         s_recurringPayments[recurringPaymentId].tokenAddress = _tokenAddress;

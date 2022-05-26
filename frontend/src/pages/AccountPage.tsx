@@ -9,7 +9,11 @@ import { useGlobalContext } from "../context/GlobalContext";
 
 export const AccountPage = () => {
   const { ethBalance, refreshBalance } = useGlobalContext();
-  const { user, chainId, network } = useMoralis();
+  const { user, chainId, network, isWeb3Enabled, isAuthenticated, isInitialized } = useMoralis();
+
+  if (!(isWeb3Enabled && isAuthenticated && isInitialized)) {
+    return <></>;
+  }
 
   return (
     <>
