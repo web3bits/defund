@@ -11,6 +11,7 @@ import { OneTimeDonation } from "../donation/OneTimeDonation";
 import { ContentMarkdown } from "../ipfs-content/ContentMarkdown";
 import { ContentImage } from "../ipfs-content/ContentImage";
 import { CreateRecurringDonation } from "../donation/CreateRecurringDonation";
+import { FundraiserWithdrawFunds } from "./FundraiserWithdrawFunds";
 
 interface FundraiserDetailsProps {
   user: Moralis.User | null;
@@ -27,13 +28,15 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
     return <Alert severity="error">Sorry, we couldn't fetch this fundraiser's details :(</Alert>;
   }
 
+  const isOwner = sameAddress(data.owner, user?.get("ethAddress"));
+
   return (
     <>
       <StyledPaper>
         <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
           {data.name}
         </Typography>
-        {sameAddress(data.owner, user?.get("ethAddress")) && <Alert>Looks like this is your fundraiser!</Alert>}
+        {isOwner && <Alert>Looks like this is your fundraiser!</Alert>}
         {data.descriptions?.length > 0 && (
           <>
             {data.descriptions.map((item: string, _idx: number) => (
@@ -62,6 +65,9 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
       {data.type !== FundraiserType.LOAN && <OneTimeDonation fundraiser={data} onDonation={refreshFundraiserDetails} />}
       {data.type === FundraiserType.RECURRING_DONATION && (
         <CreateRecurringDonation fundraiser={data} onDonation={refreshFundraiserDetails} />
+      )}
+      {isOwner && data.ethBalance.gt(0) && (
+        <FundraiserWithdrawFunds fundraiser={data!} user={user!} onWithdrawal={refreshFundraiserDetails} />
       )}
     </>
   );
