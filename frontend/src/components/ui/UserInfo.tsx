@@ -7,6 +7,7 @@ import { NotificationType, useGlobalContext } from "../../context/GlobalContext"
 import { ALLOWED_NETWORK } from "./RequireAuth";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
+import Moralis from "moralis";
 
 export const UserInfo = () => {
   const {
@@ -21,7 +22,7 @@ export const UserInfo = () => {
     isWeb3Enabled,
   } = useMoralis();
   const { chainId, switchNetwork } = useChain();
-  const { addNotification } = useGlobalContext();
+  const { addNotification, ethBalance } = useGlobalContext();
   const [isWrongNetwork, setWrongNetwork] = useState(false);
 
   useEffect(() => {
@@ -91,7 +92,8 @@ export const UserInfo = () => {
           <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />{" "}
           <Link component={RouterLink} to="account" color="secondary">
             {user.get("username")}
-          </Link>
+          </Link>{" "}
+          <small>({Moralis.Units.FromWei(ethBalance.toString(10)).substring(0, 6)} ETH)</small>
         </>
       ) : (
         <Button onClick={loginHandler} variant="contained" color="info" sx={{ mr: 1.5, ml: 3 }}>

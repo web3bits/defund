@@ -5,6 +5,7 @@ import * as acm from "@aws-cdk/aws-certificatemanager";
 import * as cloudfront from "@aws-cdk/aws-cloudfront";
 import * as targets from "@aws-cdk/aws-route53-targets";
 import * as deploy from "@aws-cdk/aws-s3-deployment";
+import * as cloudFront from "@aws-cdk/aws-cloudfront";
 
 const WEB_APP_DOMAIN = process.env.WEB_APP_DOMAIN || "defund.link";
 
@@ -19,6 +20,7 @@ export class Stack extends cdk.Stack {
     const bucket = new s3.Bucket(this, "DeFundBucket", {
       bucketName: WEB_APP_DOMAIN,
       websiteIndexDocument: "index.html",
+      websiteErrorDocument: "index.html",
       publicReadAccess: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -54,6 +56,33 @@ export class Stack extends cdk.Stack {
             behaviors: [
               {
                 isDefaultBehavior: true,
+                compress: true,
+                allowedMethods: cloudFront.CloudFrontAllowedMethods.ALL,
+                cachedMethods: cloudFront.CloudFrontAllowedCachedMethods.GET_HEAD_OPTIONS,
+                forwardedValues: {
+                  queryString: true,
+                  cookies: {
+                    forward: "none",
+                  },
+                  headers: ["Access-Control-Request-Headers", "Access-Control-Request-Method", "Origin"],
+                },
+              },
+              {
+                isDefaultBehavior: false,
+                compress: true,
+                allowedMethods: cloudFront.CloudFrontAllowedMethods.ALL,
+                cachedMethods: cloudFront.CloudFrontAllowedCachedMethods.GET_HEAD_OPTIONS,
+                forwardedValues: {
+                  queryString: true,
+                  cookies: {
+                    forward: "none",
+                  },
+                  headers: ["Access-Control-Request-Headers", "Access-Control-Request-Method", "Origin"],
+                },
+                minTtl: cdk.Duration.minutes(0),
+                maxTtl: cdk.Duration.minutes(0),
+                defaultTtl: cdk.Duration.minutes(0),
+                pathPattern: "/index.html",
               },
             ],
           },

@@ -4,13 +4,13 @@ import { Grid } from "@mui/material";
 import Moralis from "moralis";
 import { MoralisContextValue } from "react-moralis";
 import { StyledPaper } from "../ui/StyledPaper";
-import BN from "bn.js";
+import BigNumber from "bignumber.js";
 
 interface AccountDetailsProps {
   user: Moralis.User | null;
   chainId: MoralisContextValue["chainId"];
   network: MoralisContextValue["network"];
-  ethBalance: BN;
+  ethBalance: BigNumber;
 }
 
 export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDetailsProps): React.ReactElement => {
