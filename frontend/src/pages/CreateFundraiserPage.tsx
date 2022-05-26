@@ -11,7 +11,6 @@ import { FundraiserType } from "../enums/FundRaiserType";
 import { FundRaiserCategory } from "../enums/FundRaiserCategory";
 import { GenericForm, GenericFormField } from "../components/form/GenericForm";
 import dayjs from "dayjs";
-import Moralis from "moralis";
 import { useWeb3Storage } from "../hooks/useWeb3Storage";
 import { v4 as uuidv4 } from "uuid";
 import { factoryAddress } from "../utils/FundRaiserUtils";
@@ -105,8 +104,8 @@ const formFields: GenericFormField[] = [
     size: 6,
     field: (
       <TextField
-        label="Goal amount in ETH"
-        helperText="If you provide this value, the fundraiser will close once this amount is donated"
+        label="Goal amount in US Dollars"
+        helperText="If you provide this value, the fundraiser will close once total value of donations exceeds this value"
         name="fundraiserGoalAmount"
         margin="none"
         required={required.fundraiserGoalAmount}
@@ -117,7 +116,7 @@ const formFields: GenericFormField[] = [
 ];
 
 export const CreateFundraiserPage = () => {
-  const { addNotification, setLoading } = useGlobalContext();
+  const { addNotification, setLoading, setLoadingMessage } = useGlobalContext();
   const { runContractFunction, isFetching, isLoading } = useWeb3Contract({
     contractAddress: factoryAddress,
     functionName: "createFundraiser",
@@ -132,22 +131,26 @@ export const CreateFundraiserPage = () => {
 
     addNotification(NotificationType.ERROR, err?.message || err?.error || "" + err);
     setLoading(false);
+    setLoadingMessage("");
   };
 
-  const handleMoralisSuccess = () => {
-    addNotification(
-      NotificationType.SUCCESS,
-      "The fundraiser has been created! Please wait for Blockchain confirmation..."
-    );
+  const handleMoralisSuccess = async (tx: any) => {
+    setLoadingMessage("Waiting for transaction confirmation...");
+    await tx?.wait(1);
+    addNotification(NotificationType.SUCCESS, "The fundraiser has been created!");
     setLoading(false);
+    setLoadingMessage("");
   };
 
   const onSubmit = async (values: any) => {
     setLoading(true);
 
     try {
+      setLoadingMessage("Saving data to IPFS...");
       const fileName = `${uuidv4()}.json`;
       const descriptionCid = await storeAsJson(values.fundraiserDescription, fileName);
+
+      setLoadingMessage("Executing transaction...");
       await runContractFunction({
         params: {
           params: {
@@ -156,7 +159,7 @@ export const CreateFundraiserPage = () => {
             _name: values.fundraiserName,
             _description: descriptionCid,
             _endDate: values.fundraiserEndDate ? dayjs(values.fundraiserEndDate).unix() : 0,
-            _goalAmount: Moralis.Units.ETH(values.fundraiserGoalAmount || 0),
+            _goalAmount: Math.round((values.fundraiserGoalAmount || 0) * 100),
           },
         },
         onError: handleMoralisError,

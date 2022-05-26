@@ -1,18 +1,19 @@
 import "date-fns";
 import * as React from "react";
-import Typography from "@mui/material/Typography";
 import { useMoralis, useWeb3Contract } from "react-moralis";
 import { NotificationType, useGlobalContext } from "../context/GlobalContext";
 import * as fundraiserAbi from "../artifacts/contracts/DeFund.sol/DeFund.json";
 import { useEffect, useState } from "react";
-import { Debug } from "../components/ui/Debug";
 import { useParams } from "react-router-dom";
+import { FundraiserDetails } from "../components/fundraiser/FundraiserDetails";
+import { FundraiserDetailsData } from "../enums/FundRaiser";
+import { extractDetails } from "../utils/FundRaiserUtils";
 
 export const FundraiserDetailsPage = () => {
   const { address } = useParams();
   const { addNotification, setLoading } = useGlobalContext();
   const { user } = useMoralis();
-  const [data, setData] = useState<any>({});
+  const [data, setData] = useState<FundraiserDetailsData>();
 
   const { runContractFunction, isFetching, isLoading } = useWeb3Contract({
     abi: fundraiserAbi.abi,
@@ -28,12 +29,12 @@ export const FundraiserDetailsPage = () => {
     setLoading(false);
   };
 
-  const handleMoralisSuccess = (data: any) => {
-    setData(data);
+  const handleMoralisSuccess = (successData: any) => {
+    setData(extractDetails(successData, address));
     setLoading(false);
   };
 
-  useEffect(() => {
+  const refreshFundraiserDetails = () => {
     runContractFunction({
       params: {
         contractAddress: address,
@@ -41,6 +42,10 @@ export const FundraiserDetailsPage = () => {
       onError: handleMoralisError,
       onSuccess: handleMoralisSuccess,
     }).then();
+  };
+
+  useEffect(() => {
+    refreshFundraiserDetails();
   }, [address]);
 
   useEffect(() => {
@@ -49,10 +54,7 @@ export const FundraiserDetailsPage = () => {
 
   return (
     <>
-      <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
-        Fundraiser details
-      </Typography>
-      <Debug input={{ data, user }} />
+      <FundraiserDetails data={data} user={user} refreshFundraiserDetails={refreshFundraiserDetails} />
     </>
   );
 };

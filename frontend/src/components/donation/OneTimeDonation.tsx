@@ -8,6 +8,7 @@ import { NotificationType, useGlobalContext } from "../../context/GlobalContext"
 import { ADDRESS_ZERO, factoryAddress } from "../../utils/FundRaiserUtils";
 import * as factoryAbi from "../../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { StyledPaper } from "../ui/StyledPaper";
+import { FundraiserDetailsData } from "../../enums/FundRaiser";
 
 const schema = Yup.object({
   token: Yup.string().required(),
@@ -22,7 +23,7 @@ const formFields: GenericFormField[] = [
     field: (
       <Select
         name="token"
-        label="Select a token to deposit"
+        label="Select a token to donate"
         formControlProps={{ margin: "none" }}
         required={required.token}
       >
@@ -37,22 +38,23 @@ const formFields: GenericFormField[] = [
     size: 6,
     field: (
       <TextField
-        label="Amount to deposit"
+        label="Amount to donate"
         name="amount"
         margin="none"
         required={required.amount}
-        helperText="For example to deposit 0.34 ETH, type 0.34 in this field"
+        helperText="For example to donate 0.34 ETH, type 0.34 in this field"
       />
     ),
   },
 ];
 
-interface DepositFundsProps {
-  onDeposit?: () => void;
+interface OneTimeDonationProps {
+  fundraiser: FundraiserDetailsData;
+  onDonation?: () => void;
 }
 
-export const DepositFunds = ({ onDeposit }: DepositFundsProps): React.ReactElement => {
-  const { addNotification, setLoading, setLoadingMessage } = useGlobalContext();
+export const OneTimeDonation = ({ fundraiser, onDonation }: OneTimeDonationProps): React.ReactElement => {
+  const { addNotification, setLoading, setLoadingMessage, ethBalance, refreshBalance } = useGlobalContext();
 
   const handleMoralisError = (err: string[] | Error | any) => {
     if (Array.isArray(err)) {
@@ -63,18 +65,32 @@ export const DepositFunds = ({ onDeposit }: DepositFundsProps): React.ReactEleme
   };
 
   const handleMoralisSuccess = () => {
-    addNotification(NotificationType.SUCCESS, "Deposit successful!");
+    addNotification(NotificationType.SUCCESS, "Donation successful!");
+    refreshBalance();
+    if (typeof onDonation === "function") {
+      onDonation();
+    }
   };
 
   const onSubmit = async (values: any) => {
+    if (ethBalance.lt(Moralis.Units.ETH(values.amount))) {
+      addNotification(
+        NotificationType.ERROR,
+        `You're trying to donate more than your current balance of ${Moralis.Units.FromWei(
+          ethBalance.toString(10)
+        )} ETH. Deposit more funds by clicking on your account name in navbar.`
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       const options = {
         contractAddress: factoryAddress,
         abi: factoryAbi.abi,
-        functionName: "depositFunds",
-        msgValue: Moralis.Units.ETH(values.amount),
+        functionName: "donateById",
         params: {
+          _fundraiserId: fundraiser.id,
           _amount: Moralis.Units.ETH(values.amount),
           _tokenAddress: ADDRESS_ZERO,
         },
@@ -89,9 +105,6 @@ export const DepositFunds = ({ onDeposit }: DepositFundsProps): React.ReactEleme
       } finally {
         setLoading(false);
         setLoadingMessage("");
-        if (typeof onDeposit === "function") {
-          onDeposit();
-        }
       }
     } catch (e: any) {
       console.error(e);
@@ -105,7 +118,7 @@ export const DepositFunds = ({ onDeposit }: DepositFundsProps): React.ReactEleme
   return (
     <StyledPaper sx={{ mt: 3 }}>
       <Typography component="h1" variant="h5">
-        Deposit funds (ETH)
+        Donate to this fundraiser
       </Typography>
       <GenericForm
         onSubmit={onSubmit}

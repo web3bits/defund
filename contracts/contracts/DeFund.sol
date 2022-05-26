@@ -1,15 +1,21 @@
 // SPDX-License-Identifier: Unlicensed
 pragma solidity ^0.8.7;
 
-import "hardhat/console.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "./DeFundModel.sol";
 import "./DeFundFactory.sol";
+import "./RateConverter.sol";
+
+error DeFund__not_implemented();
 
 contract DeFund {
+    using RateConverter for uint256;
+
     /* Immutable state variables */
     uint public immutable i_id;
     address public immutable i_owner;
-    DeFundFactory.FundraiserType public immutable i_type;
-    DeFundFactory.FundraiserCategory public immutable i_category;
+    DeFundModel.FundraiserType public immutable i_type;
+    DeFundModel.FundraiserCategory public immutable i_category;
     uint public immutable i_endDate;
     uint public immutable i_goalAmount;
     DeFundFactory private immutable i_factory;
@@ -19,7 +25,7 @@ contract DeFund {
     string[] public s_images;
     uint public s_defaultImage;
     string public s_name;
-    DeFundFactory.FundraiserStatus public s_status;
+    DeFundModel.FundraiserStatus public s_status;
     mapping(address => uint) public s_balances;
     mapping(address => mapping(address => uint)) public s_donors;
 
@@ -33,8 +39,8 @@ contract DeFund {
     constructor(
         uint _id,
         address _owner,
-        DeFundFactory.FundraiserType _type,
-        DeFundFactory.FundraiserCategory _category,
+        DeFundModel.FundraiserType _type,
+        DeFundModel.FundraiserCategory _category,
         string memory _name,
         string memory _initialDescription,
         uint _endDate,
@@ -48,13 +54,13 @@ contract DeFund {
         s_descriptions.push(_initialDescription);
         i_factory = DeFundFactory(msg.sender);
         i_endDate = _endDate;
-        i_goalAmount = _goalAmount;
-        s_status = DeFundFactory.FundraiserStatus.ACTIVE;
+        i_goalAmount = _goalAmount; // in USD cents! 1 USD = 100 _goalAmount
+        s_status = DeFundModel.FundraiserStatus.ACTIVE;
     }
 
     /* Donate funds to the fundraiser */
     function makeDonation(address _donorAddress, uint _amount, address _tokenAddress) external payable returns (bool) {
-        // TODO check status - should not accept donations if status != active
+        require(s_status == DeFundModel.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is not active");
         require(_amount > 0, "Cannot deposit 0");
         if (_tokenAddress == address(0)) {
             // ETH deposit
@@ -62,11 +68,11 @@ contract DeFund {
             s_donors[_donorAddress][address(0)] = s_donors[_donorAddress][address(0)] + _amount;
             s_balances[address(0)] = s_balances[address(0)] + _amount;
         } else {
-            // ERC20 deposit
-            IERC20(_tokenAddress).transferFrom(_donorAddress, address(this), _amount);
-            s_donors[_donorAddress][_tokenAddress] = s_donors[_donorAddress][_tokenAddress] + _amount;
-            s_balances[_tokenAddress] = s_balances[_tokenAddress] + _amount;
+            // TODO
+            revert DeFund__not_implemented();
         }
+
+        finalizeDonation();
 
         return true;
 
@@ -76,15 +82,18 @@ contract DeFund {
     /* Withdraw funds from the contract */
     function withdrawFunds(uint _amount, address _tokenAddress) public onlyOwner {
         require(_amount > 0, "Cannot withdraw 0");
+        require(s_status != DeFundModel.FundraiserStatus.ACTIVE, "You cannot donate to a fundraiser that is active");
         uint currentBalance = s_balances[_tokenAddress];
         require(_amount <= currentBalance, "Sorry, can't withdraw more than total donations");
 
         s_balances[_tokenAddress] = currentBalance - _amount;
 
         if (_tokenAddress == address(0)) {
-            payable(msg.sender).transfer(_amount);
+            (bool success, ) = msg.sender.call{value: _amount}("");
+            require(success, "Transfer failed.");
         } else {
-            IERC20(_tokenAddress).transfer(msg.sender, _amount);
+            // TODO
+            revert DeFund__not_implemented();
         }
 
         // TODO emit
@@ -111,24 +120,24 @@ contract DeFund {
 
     /* Close fundraiser and revert all donations */
     function closeAndRevertDonations() public onlyOwner {
-        require(s_status == DeFundFactory.FundraiserStatus.ACTIVE, "You can only close active fundraisers");
+        require(s_status == DeFundModel.FundraiserStatus.ACTIVE, "You can only close active fundraisers");
         // TODO return donations
-        s_status = DeFundFactory.FundraiserStatus.CLOSED;
+        s_status = DeFundModel.FundraiserStatus.CLOSED;
     }
 
     /* Get all details */
     function getAllDetails() public view returns (
         uint id,
         address owner,
-        DeFundFactory.FundraiserType fType,
-        DeFundFactory.FundraiserCategory category,
+        DeFundModel.FundraiserType fType,
+        DeFundModel.FundraiserCategory category,
         uint endDate,
         uint goalAmount,
         string[] memory descriptions,
         string[] memory images,
         uint defaultImage,
         string memory name,
-        DeFundFactory.FundraiserStatus status,
+        DeFundModel.FundraiserStatus status,
         uint balances
     ) {
         return (
@@ -147,7 +156,12 @@ contract DeFund {
         );
     }
 
-    // TODO recurring
-    // TODO close one time when goal is reached (maybe control this from factory?)
-
+    function finalizeDonation() internal {
+        if (i_goalAmount > 0) {
+            uint totalDonationsInCents = s_balances[address(0)].getConversionRate(i_factory.s_priceFeed());
+            if (totalDonationsInCents >= i_goalAmount) {
+                s_status = DeFundModel.FundraiserStatus.FULLY_FUNDED;
+            }
+        }
+    }
 }

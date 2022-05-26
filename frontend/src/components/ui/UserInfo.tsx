@@ -7,6 +7,7 @@ import { NotificationType, useGlobalContext } from "../../context/GlobalContext"
 import { ALLOWED_NETWORK } from "./RequireAuth";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
+import Moralis from "moralis";
 
 export const UserInfo = () => {
 
@@ -39,7 +40,7 @@ export const UserInfo = () => {
     isWeb3Enabled,
   } = useMoralis();
   const { chainId, switchNetwork } = useChain();
-  const { addNotification } = useGlobalContext();
+  const { addNotification, ethBalance } = useGlobalContext();
   const [isWrongNetwork, setWrongNetwork] = useState(false);
 
   useEffect(() => {
