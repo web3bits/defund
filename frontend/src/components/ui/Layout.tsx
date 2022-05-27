@@ -8,7 +8,9 @@ import { useMoralis } from "react-moralis";
 import { makeStyles } from "@mui/styles";
 import { RequireAuth } from "./RequireAuth";
 import { useLocation } from "react-router-dom";
-import Image from "../../images/shokunin_World_Map.svg"; // Import using relative path
+import Image from "../../images/shokunin_World_Map.svg";
+import { isRoutePublic } from "../../utils/Auth";
+import { useEffect } from "react"; // Import using relative path
 
 const useStyles: any = makeStyles((theme: any) => ({
   root: {
@@ -47,10 +49,18 @@ const useStyles: any = makeStyles((theme: any) => ({
 
 export const Layout = () => {
   const router = useLocation();
-  const requireAuth = router.pathname !== "/";
-  const { isAuthenticated, user } = useMoralis();
+  const requireAuth = !isRoutePublic(router.pathname);
+  const { isAuthenticated, user, isWeb3Enabled, enableWeb3 } = useMoralis();
   const { isLoading } = useGlobalContext();
   const classes = useStyles();
+
+  useEffect(() => {
+    if (!isWeb3Enabled) {
+      enableWeb3()
+        .then()
+        .catch((err: any) => console.error(err));
+    }
+  }, [isWeb3Enabled]);
 
   return (
     <div
