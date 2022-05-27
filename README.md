@@ -1,11 +1,17 @@
-# DeFund
+<h1 style="color: #EC6C4D">DeFund</h1>
 
-**// TODO** write actual readme
+DeFund is a decentralized platform for running all kinds of fundraisers. This project is a submission for Chainlink Spring 2022 Hackathon. For more details please visit:
+https://defund.link  
+https://chain.link/hackathon
 
-Folder structure:
+**Warning!** This code is NOT production ready - the contracts have not been audited. It is currently deployed to Ethereum Kovan Testnet and is intended as a proof of concept, do not use to run real fundraisers!
+
+If you're interested in contributing to this project, feel free to reach out.
+
+## Repository folder structure:
 - `contracts` contains Solidity smart contracts and tooling to develop, test and deploy it (Hardhat)
 - `frontend` contains web3 dApp to interact with the contracts
-- `infra` contains AWS CDK stack definition for deployments
+- `infra` contains AWS CDK stack definition for frontend deployments
 
 ## How to deploy contracts to Kovan testnet
 
@@ -48,8 +54,14 @@ yarn install
 cp .env.example .env
 ```
 
-Then fill out values in `.env` file.
+Then fill out values in `.env` file. Note that you'll need to obtain credentials for:
+- Moralis (https://moralis.io) - used for its awesome web3 related functionalities
+- Web3.Storage (https://web3.storage/) - used to easily store and retrieve data from IPFS/Filecoin
 
-### Dev
+### Run locally in dev mode
 
 `yarn start`
+
+### Production builds
+
+Please review GitHub Actions present in the repository.
