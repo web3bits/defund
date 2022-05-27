@@ -168,4 +168,12 @@ contract DeFund {
             }
         }
     }
+
+    function getImagesCount() public view returns (uint) {
+        return s_images.length;
+    }
+
+    function getDescriptionsCount() public view returns (uint) {
+        return s_descriptions.length;
+    }
 }

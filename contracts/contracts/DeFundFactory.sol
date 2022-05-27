@@ -134,6 +134,43 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
         return fundraiserId;
     }
 
+    /* Fetch open fundraisers */
+    function listFundraisersByStatus (DeFundModel.FundraiserStatus _status) public view returns (DeFundModel.FundraiserItem[] memory fundraisersByStatus) {
+        uint i_totalFundraisersWithStatus = 0;
+
+        for(uint i = 0; i < s_counterFundraisers; i++) {
+            if (DeFund(s_fundraisers[i]).s_status() == _status) {
+                i_totalFundraisersWithStatus++;
+            }
+        }
+
+        DeFundModel.FundraiserItem[] memory openFundraisers = new DeFundModel.FundraiserItem[](i_totalFundraisersWithStatus);
+        if (i_totalFundraisersWithStatus == 0) {
+            return openFundraisers;
+        }
+        
+        for(uint i = 0; i < i_totalFundraisersWithStatus; i++) {
+            DeFund s_fundraiser = DeFund(s_fundraisers[i]);
+            if (s_fundraiser.s_status() == _status) {
+                openFundraisers[i].id = s_fundraiser.i_id();
+                openFundraisers[i].owner = s_fundraiser.i_owner();
+                openFundraisers[i].fType = s_fundraiser.i_type();
+                openFundraisers[i].category = s_fundraiser.i_category();
+                openFundraisers[i].name = s_fundraiser.s_name();
+                if (s_fundraiser.getDescriptionsCount() > 0) {
+                    openFundraisers[i].description = s_fundraiser.s_descriptions(0);
+                }
+                
+                openFundraisers[i].endDate = s_fundraiser.i_endDate();
+                openFundraisers[i].goalAmount = s_fundraiser.i_goalAmount();
+                if (s_fundraiser.getImagesCount() > s_fundraiser.s_defaultImage()) {
+                    openFundraisers[i].defaultImage = s_fundraiser.s_images(s_fundraiser.s_defaultImage());
+                }
+            }
+        }
+        return openFundraisers;
+    }
+
     /* Donate to a fundraiser (lookup by ID) */
     function donateById(
         uint _fundraiserId,

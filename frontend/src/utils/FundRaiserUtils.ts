@@ -17,8 +17,17 @@ FUNDRAISER_STATUS[FundRaiserStatus.REPAYING] = "Repaying";
 FUNDRAISER_STATUS[FundRaiserStatus.REPAID] = "Repaid";
 FUNDRAISER_STATUS[FundRaiserStatus.CLOSED] = "Closed";
 
+const FUNDRAISER_CATEGORY: any = {};
+FUNDRAISER_CATEGORY[FundRaiserCategory.MEDICAL] = "Medical";
+FUNDRAISER_CATEGORY[FundRaiserCategory.EMERGENCY] = "Emergency";
+FUNDRAISER_CATEGORY[FundRaiserCategory.FINANCIAL_EMERGENCY] = "Financial Emergency";
+FUNDRAISER_CATEGORY[FundRaiserCategory.COMMUNITY] = "Community";
+FUNDRAISER_CATEGORY[FundRaiserCategory.ANIMALS] = "Animals";
+FUNDRAISER_CATEGORY[FundRaiserCategory.EDUCATION] = "Education";
+
 export const getFundRaiserType = (type: FundraiserType) => FUNDRAISER_TYPES[type] ?? "Unknown";
-export const getFundRaiserStatus = (type: FundRaiserStatus) => FUNDRAISER_STATUS[type] ?? "Unknown";
+export const getFundRaiserStatus = (status: FundRaiserStatus) => FUNDRAISER_STATUS[status] ?? "Unknown";
+export const getFundRaiserCategory = (category: FundRaiserCategory) => FUNDRAISER_CATEGORY[category] ?? "Unknown";
 export const factoryAddress = process.env.REACT_APP_FACTORY_CONTRACT_ADDRESS!;
 export const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
