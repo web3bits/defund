@@ -43,6 +43,7 @@ library DeFundModel {
 
     struct FundraiserItem {
         uint id;
+        address addr;
         address owner;
         DeFundModel.FundraiserType fType;
         DeFundModel.FundraiserCategory category;

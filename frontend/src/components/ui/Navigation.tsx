@@ -58,19 +58,6 @@ export const Navigation = () => {
             component={RouterLink}
             variant="button"
             color="primary.light"
-            to="/create"
-            sx={{
-              my: 1,
-              textDecoration: "none",
-              "&:hover": { color: !isAuthenticated ? "secondary.main" : "primary.light" },
-            }}
-          >
-            Create a fundraiser
-          </Link>
-          <Link
-            component={RouterLink}
-            variant="button"
-            color="primary.light"
             to="/fundraisers"
             sx={{
               my: 1,
@@ -79,8 +66,23 @@ export const Navigation = () => {
               "&:hover": { color: !isAuthenticated ? "secondary.main" : "primary.light" },
             }}
           >
-            Active fundraisers
+            List of active fundraisers
           </Link>
+          {isAuthenticated && (
+            <Link
+              component={RouterLink}
+              variant="button"
+              color="primary.light"
+              to="/create"
+              sx={{
+                my: 1,
+                textDecoration: "none",
+                "&:hover": { color: !isAuthenticated ? "secondary.main" : "primary.light" },
+              }}
+            >
+              Create a fundraiser
+            </Link>
+          )}
           <UserInfo />
         </nav>
       </Toolbar>

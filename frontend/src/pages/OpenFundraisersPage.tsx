@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useWeb3Contract } from "react-moralis";
+import { useMoralis, useWeb3Contract } from "react-moralis";
 import { OpenFundRaisersList } from "../components/openfundraisers/OpenFundraisersList";
 import { factoryAddress } from "../utils/FundRaiserUtils";
 import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
@@ -11,6 +11,7 @@ import { PageHeader } from "../components/ui/PageHeader";
 const useOpenFundraisersPage = () => {
   const [openFundraisers, setOpenFundraisers] = useState([]);
   const { addNotification, setLoading } = useGlobalContext();
+  const { isWeb3Enabled, enableWeb3 } = useMoralis();
   const { runContractFunction, isFetching, isLoading } = useWeb3Contract({
     contractAddress: factoryAddress,
     functionName: "listFundraisersByStatus",
@@ -19,6 +20,9 @@ const useOpenFundraisersPage = () => {
 
   const fetchOpenFundraisers = async () => {
     try {
+      if (!isWeb3Enabled) {
+        await enableWeb3();
+      }
       const result: any = await runContractFunction({
         params: {
           params: {
@@ -59,14 +63,11 @@ const useOpenFundraisersPage = () => {
 
 export const OpenFundRaisersPage = () => {
   const { loading, openFundraisers } = useOpenFundraisersPage();
-  if (loading) {
-    return null;
-  }
 
   return (
     <Container>
       <PageHeader>Open Fundraisers</PageHeader>
-      <OpenFundRaisersList fundraisers={openFundraisers} />
+      <OpenFundRaisersList fundraisers={openFundraisers} isLoading={loading} />
     </Container>
   );
 };

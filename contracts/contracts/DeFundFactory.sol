@@ -150,21 +150,22 @@ contract DeFundFactory is KeeperCompatibleInterface, Ownable {
         }
         
         for(uint i = 0; i < i_totalFundraisersWithStatus; i++) {
-            DeFund s_fundraiser = DeFund(s_fundraisers[i]);
-            if (s_fundraiser.s_status() == _status) {
-                openFundraisers[i].id = s_fundraiser.i_id();
-                openFundraisers[i].owner = s_fundraiser.i_owner();
-                openFundraisers[i].fType = s_fundraiser.i_type();
-                openFundraisers[i].category = s_fundraiser.i_category();
-                openFundraisers[i].name = s_fundraiser.s_name();
-                if (s_fundraiser.getDescriptionsCount() > 0) {
-                    openFundraisers[i].description = s_fundraiser.s_descriptions(0);
+            DeFund fundraiser = DeFund(s_fundraisers[i]);
+            if (fundraiser.s_status() == _status) {
+                openFundraisers[i].id = fundraiser.i_id();
+                openFundraisers[i].addr = s_fundraisers[i];
+                openFundraisers[i].owner = fundraiser.i_owner();
+                openFundraisers[i].fType = fundraiser.i_type();
+                openFundraisers[i].category = fundraiser.i_category();
+                openFundraisers[i].name = fundraiser.s_name();
+                if (fundraiser.getDescriptionsCount() > 0) {
+                    openFundraisers[i].description = fundraiser.s_descriptions(0);
                 }
                 
-                openFundraisers[i].endDate = s_fundraiser.i_endDate();
-                openFundraisers[i].goalAmount = s_fundraiser.i_goalAmount();
-                if (s_fundraiser.getImagesCount() > s_fundraiser.s_defaultImage()) {
-                    openFundraisers[i].defaultImage = s_fundraiser.s_images(s_fundraiser.s_defaultImage());
+                openFundraisers[i].endDate = fundraiser.i_endDate();
+                openFundraisers[i].goalAmount = fundraiser.i_goalAmount();
+                if (fundraiser.getImagesCount() > fundraiser.s_defaultImage()) {
+                    openFundraisers[i].defaultImage = fundraiser.s_images(fundraiser.s_defaultImage());
                 }
             }
         }
