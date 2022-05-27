@@ -128,7 +128,7 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
               {data.goalAmount > 0 && (
                 <>
                   <Grid item xs={4} sx={{ mb: 3 }}>
-                    Category:
+                    Goal:
                   </Grid>
                   <Grid item xs={8}>
                     {`$${data.goalAmount / 100}`}
