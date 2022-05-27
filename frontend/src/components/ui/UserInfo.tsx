@@ -8,11 +8,11 @@ import {
   Divider,
   IconButton,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 import AddIcon from "@mui/icons-material/Add";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import PaidIcon from "@mui/icons-material/Paid";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import { createStyles, makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
@@ -23,6 +23,7 @@ import { ALLOWED_NETWORK } from "./RequireAuth";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import ethereum from "../../images/ethereum.svg";
+import Moralis from "moralis";
 
 export const UserInfo = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -47,7 +48,7 @@ export const UserInfo = () => {
   } = useMoralis();
 
   const { chainId, switchNetwork } = useChain();
-  const { addNotification /*, ethBalance*/ } = useGlobalContext();
+  const { addNotification, ethBalance } = useGlobalContext();
   const [isWrongNetwork, setWrongNetwork] = useState(false);
 
   useEffect(() => {
@@ -207,18 +208,27 @@ export const UserInfo = () => {
           >
             <MenuItem>
               <ListItemIcon>
-                <img src={ethereum} style={{ width: "24px", height: "24px" }} alt="eth icon" />
-              </ListItemIcon>
-              <Typography variant="body2" gutterBottom>
-                Welcome To DeFund.
-              </Typography>
-            </MenuItem>
-            <MenuItem>
-              <ListItemIcon>
                 <AccountCircleIcon fontSize="small" />
               </ListItemIcon>
               <Link component={RouterLink} to="/account" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
-                My Account
+                Account (deposit / withdraw)
+              </Link>
+            </MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <PaidIcon fontSize="small" />
+              </ListItemIcon>
+              <Link component={RouterLink} to="/recurring" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
+                My recurring payments
+              </Link>
+            </MenuItem>
+            <Divider />
+            <MenuItem>
+              <ListItemIcon>
+                <img src={ethereum} style={{ width: "24px", height: "24px" }} alt="eth icon" />
+              </ListItemIcon>
+              <Link component={RouterLink} to="/account" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
+                Balance: {Moralis.Units.FromWei(ethBalance.toString())} ETH
               </Link>
             </MenuItem>
             <Divider />
@@ -227,7 +237,7 @@ export const UserInfo = () => {
                 <AddIcon fontSize="small" />
               </ListItemIcon>
               <Link component={RouterLink} to="/create" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
-                Create a Fundraiser
+                Create a new Fundraiser
               </Link>
             </MenuItem>
             <MenuItem>
@@ -235,9 +245,10 @@ export const UserInfo = () => {
                 <AutorenewIcon fontSize="small" />
               </ListItemIcon>
               <Link component={RouterLink} to="/fundraisers" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
-                Active Fundraiser
+                Active fundraisers
               </Link>
             </MenuItem>
+            <Divider />
             <MenuItem onClick={logoutHandler}>
               <ListItemIcon>
                 <Logout fontSize="small" />

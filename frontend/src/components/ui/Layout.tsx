@@ -64,16 +64,7 @@ export const Layout = () => {
   }, [isWeb3Enabled]);
 
   return (
-    <div
-      className={
-        classes.greyBg
-        // isAuthenticated && requireAuth && user
-        //   ? classes.greyBg
-        //   : isAuthenticated && user
-        //   ? classes.secondaryBg
-        //   : classes.darkBg
-      }
-    >
+    <div className={isAuthenticated ? classes.greyBg : classes.darkBg}>
       <Navigation />
       {isLoading && <GlobalSpinner />}
       <div className={isAuthenticated && user ? classes.container : classes.mapContainer}>
