@@ -45,7 +45,7 @@ export const OpenFundRaiserItem = memo(({ item }: { item: FundraiserItemInterfac
             component="img"
             height={200}
             width={200}
-            image={defaultImage?.length > 0 ? defaultImage : randomPictureUrl}
+            image={defaultImage?.length > 0 ? `https://${defaultImage}.ipfs.dweb.link` : randomPictureUrl}
             alt={name}
           />
           <CardContent>

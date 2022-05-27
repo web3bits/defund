@@ -15,6 +15,7 @@ import { FundraiserStatusBadge } from "../ui/FundraiserStatusBadge";
 import makeBlockie from "ethereum-blockies-base64";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { AddImage } from "./AddImage";
 
 dayjs.extend(relativeTime);
 
@@ -38,8 +39,13 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
   return (
     <>
       <PageHeader>{data.name}</PageHeader>
-      {isOwner && <Alert sx={{ mb: 2 }}>Looks like this is your fundraiser!</Alert>}
       <Grid container spacing={2}>
+        {isOwner && (
+          <Grid item sm={12}>
+            <Alert sx={{ mb: 2 }} severity="info">You are an owner of this fundraiser.</Alert>
+            <AddImage fundraiser={data!} onUploaded={refreshFundraiserDetails} />
+          </Grid>
+        )}
         <Grid item sm={12} md={9}>
           <Typography component="h1" variant="h6">
             Description and updates:

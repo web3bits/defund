@@ -14,6 +14,14 @@ export const useWeb3Storage = () => ({
     return client.put([file], { wrapWithDirectory: false });
   },
 
+  async storeImage(file: File): Promise<string> {
+    if (!process.env.REACT_APP_WEB3_STORAGE_TOKEN) {
+      throw new Error("Web3storage token not defined");
+    }
+
+    return client.put([file], { wrapWithDirectory: false });
+  },
+
   async getJson<T>(cid: string): Promise<T> {
     console.log(`Fetching ${cid} from IPFS`);
     const res = await fetch(`https://${cid}.ipfs.dweb.link`);
