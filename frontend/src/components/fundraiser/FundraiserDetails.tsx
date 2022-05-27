@@ -71,7 +71,7 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
                 Images:
               </Typography>
               <StyledPaper>
-                <Masonry columns={3} spacing={2}>
+                <Masonry columns={data.images.length > 2 ? 3 : data.images.length} spacing={2}>
                   {data.images.map((item: string, _idx: number) => (
                     <React.Fragment key={_idx}>
                       <ContentImage cid={item} />
