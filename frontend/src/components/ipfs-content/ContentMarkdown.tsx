@@ -78,7 +78,7 @@ export const ContentMarkdown = ({ cid }: ContentMarkdownProps) => {
   }
 
   if (isLoading) {
-    return <Skeleton variant="text" />;
+    return <Skeleton variant="text" height={50} />;
   }
 
   return <ReactMarkdown>{content}</ReactMarkdown>;

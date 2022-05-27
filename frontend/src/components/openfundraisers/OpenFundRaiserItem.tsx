@@ -1,10 +1,8 @@
-import { Avatar, Card, CardContent, CardHeader, CardMedia, Chip, Grid, Typography } from "@mui/material";
+import { Card, CardContent, CardHeader, CardMedia, Grid } from "@mui/material";
 import { memo } from "react";
-import { getFundRaiserCategory, getFundRaiserStatus, getFundRaiserType } from "../../utils/FundRaiserUtils";
+import { getFundRaiserCategory, getFundRaiserType } from "../../utils/FundRaiserUtils";
 
 import { formatTimestamp } from "../../utils/DateUtils";
-import { lightBlue, lightGreen } from "@mui/material/colors";
-import { useContentMarkdown } from "../ipfs-content/ContentMarkdown";
 import { BigNumber } from "ethers";
 import { Link } from "react-router-dom";
 import { FundRaiserStatus } from "../../enums/FundRaiserStatus";

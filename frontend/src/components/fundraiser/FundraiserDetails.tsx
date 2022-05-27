@@ -1,10 +1,9 @@
-import { Debug } from "../ui/Debug";
 import * as React from "react";
 import Moralis from "moralis";
 import { FundraiserDetailsData } from "../../enums/FundRaiser";
 import { StyledPaper } from "../ui/StyledPaper";
-import { Alert, Skeleton } from "@mui/material";
-import { sameAddress } from "../../utils/FundRaiserUtils";
+import { Alert, Grid, Skeleton, Typography } from "@mui/material";
+import { getFundRaiserCategory, getFundRaiserType, sameAddress } from "../../utils/FundRaiserUtils";
 import { FundraiserType } from "../../enums/FundRaiserType";
 import { OneTimeDonation } from "../donation/OneTimeDonation";
 import { ContentMarkdown } from "../ipfs-content/ContentMarkdown";
@@ -12,6 +11,12 @@ import { ContentImage } from "../ipfs-content/ContentImage";
 import { CreateRecurringDonation } from "../donation/CreateRecurringDonation";
 import { FundraiserWithdrawFunds } from "./FundraiserWithdrawFunds";
 import { PageHeader } from "../ui/PageHeader";
+import { FundraiserStatusBadge } from "../ui/FundraiserStatusBadge";
+import makeBlockie from "ethereum-blockies-base64";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 interface FundraiserDetailsProps {
   user: Moralis.User | null;
@@ -33,33 +38,103 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
   return (
     <>
       <PageHeader>{data.name}</PageHeader>
-      <StyledPaper>
-        {isOwner && <Alert>Looks like this is your fundraiser!</Alert>}
-        {data.descriptions?.length > 0 && (
-          <>
-            {data.descriptions.map((item: string, _idx: number) => (
-              <React.Fragment key={_idx}>
-                <ContentMarkdown cid={item} />
-                <hr />
-              </React.Fragment>
-            ))}
-          </>
-        )}
-        {data.images?.length > 0 && (
-          <>
-            {data.images.map((item: string, _idx: number) => (
-              <React.Fragment key={_idx}>
-                <ContentImage cid={item} />
-                <hr />
-              </React.Fragment>
-            ))}
-          </>
-        )}
-      </StyledPaper>
-      <StyledPaper sx={{ mt: 3 }}>
-        <Debug input={{ ...data, ethBalanceAsString: Moralis.Units.FromWei(data.ethBalance.toString()) }} />
-      </StyledPaper>
+      {isOwner && <Alert sx={{ mb: 2 }}>Looks like this is your fundraiser!</Alert>}
+      <Grid container spacing={2}>
+        <Grid item sm={12} md={9}>
+          <Typography component="h1" variant="h6">
+            Description and updates:
+          </Typography>
+          <StyledPaper>
+            {data.descriptions?.length > 0 && (
+              <>
+                {data.descriptions.map((item: string, _idx: number) => (
+                  <React.Fragment key={_idx}>
+                    <ContentMarkdown cid={item} />
+                    <hr />
+                  </React.Fragment>
+                ))}
+              </>
+            )}
+          </StyledPaper>
+          {data.images?.length > 0 && (
+            <StyledPaper>
+              {data.images.map((item: string, _idx: number) => (
+                <React.Fragment key={_idx}>
+                  <ContentImage cid={item} />
+                  <hr />
+                </React.Fragment>
+              ))}
+            </StyledPaper>
+          )}
+        </Grid>
+        <Grid item sm={12} md={3}>
+          <Typography component="h1" variant="h6">
+            Details:
+          </Typography>
+          <StyledPaper>
+            <Grid container>
+              <Grid item xs={4} sx={{ mb: 3 }}>
+                Status:
+              </Grid>
+              <Grid item xs={8}>
+                <FundraiserStatusBadge status={data.status} />
+              </Grid>
 
+              <Grid item xs={4} sx={{ mb: 3 }}>
+                Type:
+              </Grid>
+              <Grid item xs={8}>
+                {getFundRaiserType(data.type)}
+              </Grid>
+
+              <Grid item xs={4} sx={{ mb: 3 }}>
+                Category:
+              </Grid>
+              <Grid item xs={8}>
+                {getFundRaiserCategory(data.category)}
+              </Grid>
+
+              <Grid item xs={4} sx={{ mb: 3 }}>
+                Organizer:
+              </Grid>
+              <Grid item xs={8}>
+                <a href={`https://kovan.etherscan.io/address/${data.owner}`} target="_blank">
+                  <img style={{ width: 28 }} src={makeBlockie(data.owner)} alt={data.owner} />
+                </a>
+              </Grid>
+
+              <Grid item xs={4} sx={{ mb: 3 }}>
+                Donations:
+              </Grid>
+              <Grid item xs={8}>
+                {Moralis.Units.FromWei(data.ethBalance.toString())} ETH
+              </Grid>
+
+              {data.goalAmount > 0 && (
+                <>
+                  <Grid item xs={4} sx={{ mb: 3 }}>
+                    Category:
+                  </Grid>
+                  <Grid item xs={8}>
+                    {`$${data.goalAmount / 100}`}
+                  </Grid>
+                </>
+              )}
+
+              {data.endDate.valueOf() > 0 && (
+                <>
+                  <Grid item xs={4} sx={{ mb: 3 }}>
+                    End date:
+                  </Grid>
+                  <Grid item xs={8}>
+                    {dayjs(data.endDate).fromNow()}
+                  </Grid>
+                </>
+              )}
+            </Grid>
+          </StyledPaper>
+        </Grid>
+      </Grid>
       {data.type !== FundraiserType.LOAN && <OneTimeDonation fundraiser={data} onDonation={refreshFundraiserDetails} />}
       {data.type === FundraiserType.RECURRING_DONATION && (
         <CreateRecurringDonation fundraiser={data} onDonation={refreshFundraiserDetails} />
