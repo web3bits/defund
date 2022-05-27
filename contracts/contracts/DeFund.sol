@@ -104,9 +104,9 @@ contract DeFund {
     }
 
     /* Add a picture */
-    function addImage(string memory _picture, bool makeDefault) external onlyOwner {
+    function addImage(string memory _picture, bool _makeDefault) external onlyOwner {
         s_images.push(_picture);
-        if (makeDefault == true) {
+        if (_makeDefault == true) {
             s_defaultImage = s_images.length - 1;
         }
     }

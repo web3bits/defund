@@ -44,7 +44,7 @@ export const AddImage = ({ fundraiser, onUploaded }: AddImageProps) => {
         functionName: "addImage",
         params: {
           _picture: cid,
-          makeDefault: true,
+          _makeDefault: true,
         },
       };
       try {

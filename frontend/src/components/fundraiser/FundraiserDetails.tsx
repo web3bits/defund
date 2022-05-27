@@ -16,6 +16,7 @@ import makeBlockie from "ethereum-blockies-base64";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { AddImage } from "./AddImage";
+import { Masonry } from "@mui/lab";
 
 dayjs.extend(relativeTime);
 
@@ -49,7 +50,7 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
           </Grid>
         )}
         <Grid item sm={12} md={9}>
-          <Typography component="h1" variant="h6">
+          <Typography component="h1" variant="h6" gutterBottom>
             Description and updates:
           </Typography>
           <StyledPaper>
@@ -65,14 +66,20 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
             )}
           </StyledPaper>
           {data.images?.length > 0 && (
-            <StyledPaper>
-              {data.images.map((item: string, _idx: number) => (
-                <React.Fragment key={_idx}>
-                  <ContentImage cid={item} />
-                  <hr />
-                </React.Fragment>
-              ))}
-            </StyledPaper>
+            <>
+              <Typography component="h1" variant="h6" sx={{ mt: 3 }} gutterBottom>
+                Images:
+              </Typography>
+              <StyledPaper>
+                <Masonry columns={3} spacing={2}>
+                  {data.images.map((item: string, _idx: number) => (
+                    <React.Fragment key={_idx}>
+                      <ContentImage cid={item} />
+                    </React.Fragment>
+                  ))}
+                </Masonry>
+              </StyledPaper>
+            </>
           )}
         </Grid>
         <Grid item sm={12} md={3}>
@@ -143,8 +150,10 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
           </StyledPaper>
         </Grid>
       </Grid>
-      {data.type !== FundraiserType.LOAN && <OneTimeDonation fundraiser={data} onDonation={refreshFundraiserDetails} />}
-      {data.type === FundraiserType.RECURRING_DONATION && (
+      {user && data.type !== FundraiserType.LOAN && (
+        <OneTimeDonation fundraiser={data} onDonation={refreshFundraiserDetails} />
+      )}
+      {user && data.type === FundraiserType.RECURRING_DONATION && (
         <CreateRecurringDonation fundraiser={data} onDonation={refreshFundraiserDetails} />
       )}
       {isOwner && data.ethBalance.gt(0) && (
