@@ -1,6 +1,5 @@
 import { Grid } from "@mui/material";
 import { OpenFundRaiserItem } from "./OpenFundRaiserItem";
-import { CircularProgress, Container } from "@mui/material";
 
 export const OpenFundRaisersList = ({ fundraisers }: { fundraisers: any[] }): JSX.Element => {
   if (!Array.isArray(fundraisers) || fundraisers.length === 0) {

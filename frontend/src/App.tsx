@@ -5,7 +5,7 @@ import { Layout } from "./components/ui/Layout";
 import { HomePage } from "./pages/HomePage";
 import { Error404 } from "./pages/Error404";
 import { CreateFundraiserPage } from "./pages/CreateFundraiserPage";
-import { OpenFundRaisersPage } from "./pages/OpendFundraisersPage";
+import { OpenFundRaisersPage } from "./pages/OpenFundraisersPage";
 import { AccountPage } from "./pages/AccountPage";
 import { FundraiserDetailsPage } from "./pages/FundraiserDetailsPage";
 import { MyRecurringPaymentsPage } from "./pages/MyRecurringPaymentsPage";

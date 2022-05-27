@@ -5,10 +5,10 @@ import { CircularProgress, Container } from "@mui/material";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { Notifications } from "./Notifications";
 import { useMoralis } from "react-moralis";
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from "@mui/styles";
 import { RequireAuth } from "./RequireAuth";
 import { useLocation } from "react-router-dom";
-import Image from '../../images/shokunin_World_Map.svg'; // Import using relative path
+import Image from "../../images/shokunin_World_Map.svg"; // Import using relative path
 
 const useStyles: any = makeStyles((theme: any) => ({
   root: {
@@ -21,58 +21,64 @@ const useStyles: any = makeStyles((theme: any) => ({
     background: theme.palette.secondary.light,
   },
   greyBg: {
-    background: "#e4e4e4"
+    background: "#e4e4e4",
   },
   "@keyframes animate": {
     "100%": {
-      backgroundPosition: "-3000px 0"
-    }
+      backgroundPosition: "-3000px 0",
+    },
   },
   mapContainer: {
     backgroundImage: `url(${Image})`,
-    minHeight: 'calc(100vh - 130px)',
-    width: '100%',
-    backgroundRepeat: 'repeat',
+    minHeight: "calc(100vh - 130px)",
+    width: "100%",
+    backgroundRepeat: "repeat",
     backgroundPosition: "0 0",
     backgroundSize: "auto 100%",
-    margin: '0 auto',
-    animation: `$animate 100s linear infinite`
+    margin: "0 auto",
+    animation: `$animate 100s linear infinite`,
   },
   container: {
-    minHeight: 'calc(100vh - 130px)',
-    width: '100%',
-    margin: '0 auto',
-  }
+    minHeight: "calc(100vh - 130px)",
+    width: "100%",
+    margin: "0 auto",
+  },
 }));
 
 export const Layout = () => {
-
   const router = useLocation();
   const requireAuth = router.pathname !== "/";
   const { isAuthenticated, user } = useMoralis();
-  const { isLoading, setLoading } = useGlobalContext();
+  const { isLoading } = useGlobalContext();
   const classes = useStyles();
 
-
   return (
-    <div className={isAuthenticated && requireAuth && user ? classes.greyBg : isAuthenticated && user ? classes.secondaryBg : classes.darkBg}>
+    <div
+      className={
+        isAuthenticated && requireAuth && user
+          ? classes.greyBg
+          : isAuthenticated && user
+          ? classes.secondaryBg
+          : classes.darkBg
+      }
+    >
       <Navigation />
-      {isLoading ?
+      {isLoading ? (
         <CircularProgress color="primary" />
-        :
+      ) : (
         <div className={isAuthenticated && user ? classes.container : classes.mapContainer}>
           <Notifications />
           <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
-            {requireAuth && !isAuthenticated && !user ?
+            {requireAuth && !isAuthenticated && !user ? (
               <RequireAuth>
                 <Outlet />
               </RequireAuth>
-              :
+            ) : (
               <Outlet />
-            }
+            )}
           </Container>
         </div>
-      }
+      )}
       <Footer />
     </div>
   );

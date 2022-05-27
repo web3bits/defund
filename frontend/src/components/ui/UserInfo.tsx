@@ -1,8 +1,19 @@
-import { Button, CircularProgress, Popover, Box, Modal, Avatar, Menu, MenuItem, ListItemIcon, Divider, IconButton, Tooltip, Typography } from "@mui/material";
-import { Logout } from '@mui/icons-material';
-import AddIcon from '@mui/icons-material/Add';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+import {
+  Button,
+  CircularProgress,
+  Box,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  Divider,
+  IconButton,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { Logout } from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
 import { createStyles, makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useChain, useMoralis } from "react-moralis";
@@ -11,10 +22,9 @@ import { NotificationType, useGlobalContext } from "../../context/GlobalContext"
 import { ALLOWED_NETWORK } from "./RequireAuth";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
-import ethereum from '../../images/ethereum.svg';
+import ethereum from "../../images/ethereum.svg";
 
 export const UserInfo = () => {
-
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -37,7 +47,7 @@ export const UserInfo = () => {
   } = useMoralis();
 
   const { chainId, switchNetwork } = useChain();
-  const { addNotification, ethBalance } = useGlobalContext();
+  const { addNotification /*, ethBalance*/ } = useGlobalContext();
   const [isWrongNetwork, setWrongNetwork] = useState(false);
 
   useEffect(() => {
@@ -72,7 +82,7 @@ export const UserInfo = () => {
         height: "30px",
         alignItems: "center",
         padding: "5px",
-      }
+      },
     })
   );
 
@@ -86,22 +96,22 @@ export const UserInfo = () => {
       border: "0px",
       padding: "10px 0px",
       cursor: "pointer",
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     darkBg: {
       background: theme.palette.primary.dark,
       color: theme.palette.primary.light,
       "&:hover": {
-        backgroundColor: theme.palette.primary.dark
+        backgroundColor: theme.palette.primary.dark,
       },
     },
     lightBg: {
       background: theme.palette.secondary.main,
       color: theme.palette.primary.light,
       "&:hover": {
-        backgroundColor: theme.palette.primary.dark
+        backgroundColor: theme.palette.primary.dark,
       },
-    }
+    },
   }));
 
   const btnClasses = btnStyles();
@@ -137,22 +147,26 @@ export const UserInfo = () => {
       </div>
     );
   }
-  
+
   return (
     <>
       {isAuthenticated && user ? (
         <>
-          <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+          <Box sx={{ display: "flex", alignItems: "center", textAlign: "center" }}>
             <Tooltip title="My Account">
               <IconButton
                 onClick={handleClick}
                 size="small"
                 sx={{ ml: 2 }}
-                aria-controls={open ? 'account-menu' : undefined}
+                aria-controls={open ? "account-menu" : undefined}
                 aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
+                aria-expanded={open ? "true" : undefined}
               >
-                <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />
+                <img
+                  className={classes.avatar}
+                  src={makeBlockie(user.get("ethAddress"))}
+                  alt={user.get("ethAddress")}
+                />
               </IconButton>
             </Tooltip>
           </Box>
@@ -165,37 +179,39 @@ export const UserInfo = () => {
             PaperProps={{
               elevation: 0,
               sx: {
-                overflow: 'visible',
-                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                overflow: "visible",
+                filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                 mt: 1.5,
-                '& .MuiAvatar-root': {
+                "& .MuiAvatar-root": {
                   width: 32,
                   height: 32,
                   ml: -0.5,
                   mr: 1,
                 },
-                '&:before': {
+                "&:before": {
                   content: '""',
-                  display: 'block',
-                  position: 'absolute',
+                  display: "block",
+                  position: "absolute",
                   top: 0,
                   right: 14,
                   width: 10,
                   height: 10,
-                  bgcolor: 'background.paper',
-                  transform: 'translateY(-50%) rotate(45deg)',
+                  bgcolor: "background.paper",
+                  transform: "translateY(-50%) rotate(45deg)",
                   zIndex: 0,
                 },
               },
             }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            transformOrigin={{ horizontal: "right", vertical: "top" }}
+            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
             <MenuItem>
               <ListItemIcon>
-                <img src={ethereum} style={{width: "24px", height: "24px"}} alt="eth icon" />
+                <img src={ethereum} style={{ width: "24px", height: "24px" }} alt="eth icon" />
               </ListItemIcon>
-              <Typography variant="body2" gutterBottom>Welcome In DeFund.</Typography>
+              <Typography variant="body2" gutterBottom>
+                Welcome To DeFund.
+              </Typography>
             </MenuItem>
             <MenuItem>
               <ListItemIcon>
@@ -222,9 +238,7 @@ export const UserInfo = () => {
                 Active Fundraiser
               </Link>
             </MenuItem>
-            <MenuItem
-              onClick={logoutHandler}
-            >
+            <MenuItem onClick={logoutHandler}>
               <ListItemIcon>
                 <Logout fontSize="small" />
               </ListItemIcon>
