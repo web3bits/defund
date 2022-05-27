@@ -62,6 +62,7 @@ export const HomePage = () => {
                 a decentralized manner without the cost of on-chain storage.
               </li>
             </ul>
+            If you're interested in technical aspects of the project, visit our GitHub: <a href="https://github.com/web3bits/defund">https://github.com/web3bits/defund</a>.
           </Typography>
         </Grid>
         <Grid item xs={12} lg={6}>
