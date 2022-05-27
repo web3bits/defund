@@ -12,5 +12,5 @@ export const formatDate = (date: string, format: string) => {
 };
 
 export const formatTimestamp = (date: number, format: string) => {
-  return advancedDayjs(advancedDayjs(date).toString()).format(format);
+  return advancedDayjs(advancedDayjs.unix(date).toString()).format(format);
 };

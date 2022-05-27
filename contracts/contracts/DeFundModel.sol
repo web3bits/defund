@@ -40,4 +40,17 @@ library DeFundModel {
         uint lastExecution;
         RecurringPaymentStatus status;
     }
+
+    struct FundraiserItem {
+        uint id;
+        address owner;
+        DeFundModel.FundraiserType fType;
+        DeFundModel.FundraiserCategory category;
+        uint endDate;
+        uint goalAmount;
+        string description;
+        string defaultImage;
+        string name;
+        DeFundModel.FundraiserStatus status;
+    }
 }
