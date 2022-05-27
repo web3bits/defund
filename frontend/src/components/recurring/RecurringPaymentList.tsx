@@ -1,7 +1,6 @@
 import * as React from "react";
 import Moralis from "moralis";
 import { StyledPaper } from "../ui/StyledPaper";
-import Typography from "@mui/material/Typography";
 import { Alert, Grid, Skeleton } from "@mui/material";
 import { RecurringPayment } from "../../enums/RecurringPayment";
 import { createStyles, makeStyles } from "@mui/styles";
@@ -12,6 +11,7 @@ import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 import { CancelRecurringPaymentButton } from "./CancelRecurringPaymentButton";
 import { NiceTimeInterval } from "../ui/NiceTimeInterval";
+import { PageHeader } from "../ui/PageHeader";
 
 dayjs.extend(relativeTime);
 
@@ -38,9 +38,7 @@ export const RecurringPaymentList = ({ data, onCancel, isLoading }: RecurringPay
 
   return (
     <>
-      <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
-        List of your recurring payments
-      </Typography>
+      <PageHeader>List of your recurring payments</PageHeader>
       {data.length === 0 && <Alert severity="warning">Seems like you don't have any recurring payments yet</Alert>}
       {data.length > 0 && (
         <>

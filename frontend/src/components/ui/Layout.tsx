@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";
-import { CircularProgress, Container } from "@mui/material";
+import { Container } from "@mui/material";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { Notifications } from "./Notifications";
 import { useMoralis } from "react-moralis";
@@ -10,7 +10,8 @@ import { RequireAuth } from "./RequireAuth";
 import { useLocation } from "react-router-dom";
 import Image from "../../images/shokunin_World_Map.svg";
 import { isRoutePublic } from "../../utils/Auth";
-import { useEffect } from "react"; // Import using relative path
+import { useEffect } from "react";
+import { GlobalSpinner } from "./GlobalSpinner"; // Import using relative path
 
 const useStyles: any = makeStyles((theme: any) => ({
   root: {
@@ -65,30 +66,28 @@ export const Layout = () => {
   return (
     <div
       className={
-        isAuthenticated && requireAuth && user
-          ? classes.greyBg
-          : isAuthenticated && user
-          ? classes.secondaryBg
-          : classes.darkBg
+        classes.greyBg
+        // isAuthenticated && requireAuth && user
+        //   ? classes.greyBg
+        //   : isAuthenticated && user
+        //   ? classes.secondaryBg
+        //   : classes.darkBg
       }
     >
       <Navigation />
-      {isLoading ? (
-        <CircularProgress color="primary" />
-      ) : (
-        <div className={isAuthenticated && user ? classes.container : classes.mapContainer}>
-          <Notifications />
-          <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
-            {requireAuth && !isAuthenticated && !user ? (
-              <RequireAuth>
-                <Outlet />
-              </RequireAuth>
-            ) : (
+      {isLoading && <GlobalSpinner />}
+      <div className={isAuthenticated && user ? classes.container : classes.mapContainer}>
+        <Notifications />
+        <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
+          {requireAuth && !isAuthenticated && !user ? (
+            <RequireAuth>
               <Outlet />
-            )}
-          </Container>
-        </div>
-      )}
+            </RequireAuth>
+          ) : (
+            <Outlet />
+          )}
+        </Container>
+      </div>
       <Footer />
     </div>
   );

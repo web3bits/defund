@@ -1,4 +1,4 @@
-import { Container, Grid, Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useWeb3Contract } from "react-moralis";
 import { OpenFundRaisersList } from "../components/openfundraisers/OpenFundraisersList";
@@ -6,6 +6,7 @@ import { factoryAddress } from "../utils/FundRaiserUtils";
 import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { FundRaiserStatus } from "../enums/FundRaiserStatus";
 import { NotificationType, useGlobalContext } from "../context/GlobalContext";
+import { PageHeader } from "../components/ui/PageHeader";
 
 const useOpenFundraisersPage = () => {
   const [openFundraisers, setOpenFundraisers] = useState([]);
@@ -25,7 +26,6 @@ const useOpenFundraisersPage = () => {
           },
         },
         onError: handleMoralisError,
-        onSuccess: handleMoralisSuccess,
       });
       setOpenFundraisers(result);
     } catch (e: any) {
@@ -34,15 +34,9 @@ const useOpenFundraisersPage = () => {
         NotificationType.ERROR,
         "An error has occurred while calling the contract. Please check browser console for details."
       );
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handleMoralisSuccess = () => {
-    addNotification(
-      NotificationType.SUCCESS,
-      "The fundraiser has been created! Please wait for Blockchain confirmation..."
-    );
-    setLoading(false);
   };
 
   const handleMoralisError = (err: string[] | Error | any) => {
@@ -51,11 +45,10 @@ const useOpenFundraisersPage = () => {
     }
 
     addNotification(NotificationType.ERROR, err?.message || err?.error || "" + err);
-    setLoading(false);
   };
 
   useEffect(() => {
-    fetchOpenFundraisers();
+    fetchOpenFundraisers().then();
   }, []);
 
   return {
@@ -72,11 +65,7 @@ export const OpenFundRaisersPage = () => {
 
   return (
     <Container>
-      <Grid item xs={12} sx={{ marginBottom: "1rem" }}>
-        <Typography variant="h4" component="h1" sx={{ color: "#FFFFFF" }}>
-          Open Fundraisers
-        </Typography>
-      </Grid>
+      <PageHeader>Open Fundraisers</PageHeader>
       <OpenFundRaisersList fundraisers={openFundraisers} />
     </Container>
   );

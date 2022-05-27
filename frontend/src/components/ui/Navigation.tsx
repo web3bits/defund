@@ -35,7 +35,7 @@ export const Navigation = () => {
   const { isAuthenticated } = useMoralis();
 
   return (
-    <AppBar position="static" style={{ marginBottom: 70 }} color="primary" elevation={isAuthenticated ? 2 : 0}>
+    <AppBar position="static" style={{ marginBottom: 30 }} color="primary" elevation={isAuthenticated ? 2 : 0}>
       <Toolbar>
         <nav className={classes.root}>
           <Link

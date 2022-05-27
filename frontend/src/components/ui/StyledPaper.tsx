@@ -1,13 +1,12 @@
 import React from "react";
 import { createStyles, makeStyles } from "@mui/styles";
-import { lighten, Paper, Theme } from "@mui/material";
+import { Paper } from "@mui/material";
 import { PaperProps } from "@mui/material/Paper/Paper";
 
 export const StyledPaper = ({ children, ...rest }: PaperProps): React.ReactElement => {
-  const useStyles = makeStyles((theme: Theme) =>
+  const useStyles = makeStyles(() =>
     createStyles({
-      paper: {
-        backgroundColor: lighten(theme.palette.background.default, 0.2),
+      styledPaper: {
         padding: 16,
       },
     })
@@ -15,7 +14,7 @@ export const StyledPaper = ({ children, ...rest }: PaperProps): React.ReactEleme
   const classes = useStyles();
 
   return (
-    <Paper className={classes.paper} {...rest}>
+    <Paper className={classes.styledPaper} {...rest}>
       {children}
     </Paper>
   );

@@ -1,6 +1,5 @@
 import "date-fns";
 import * as React from "react";
-import Typography from "@mui/material/Typography";
 import * as factoryAbi from "../artifacts/contracts/DeFundFactory.sol/DeFundFactory.json";
 import { MenuItem } from "@mui/material";
 import { useWeb3Contract } from "react-moralis";
@@ -14,6 +13,7 @@ import dayjs from "dayjs";
 import { useWeb3Storage } from "../hooks/useWeb3Storage";
 import { v4 as uuidv4 } from "uuid";
 import { factoryAddress } from "../utils/FundRaiserUtils";
+import { PageHeader } from "../components/ui/PageHeader";
 
 const schema = Yup.object({
   fundraiserType: Yup.string().required(),
@@ -176,9 +176,7 @@ export const CreateFundraiserPage = () => {
 
   return (
     <>
-      <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
-        Create a fundraiser
-      </Typography>
+      <PageHeader>Create a fundraiser</PageHeader>
       <GenericForm onSubmit={onSubmit} validate={validate} isDisabled={isFetching || isLoading} fields={formFields} />
     </>
   );

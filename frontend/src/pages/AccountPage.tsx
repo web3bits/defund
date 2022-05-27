@@ -1,11 +1,11 @@
 import "date-fns";
 import * as React from "react";
-import Typography from "@mui/material/Typography";
 import { useMoralis } from "react-moralis";
 import { AccountDetails } from "../components/account/AccountDetails";
 import { DepositFunds } from "../components/account/DepositFunds";
 import { WithdrawFunds } from "../components/account/WithdrawFunds";
 import { useGlobalContext } from "../context/GlobalContext";
+import { PageHeader } from "../components/ui/PageHeader";
 
 export const AccountPage = () => {
   const { ethBalance, refreshBalance } = useGlobalContext();
@@ -17,9 +17,7 @@ export const AccountPage = () => {
 
   return (
     <>
-      <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
-        Your account
-      </Typography>
+      <PageHeader>Your account</PageHeader>
       <AccountDetails user={user} chainId={chainId} network={network} ethBalance={ethBalance} />
       <DepositFunds onDeposit={refreshBalance} />
       {!ethBalance.isZero() && (

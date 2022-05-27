@@ -3,7 +3,6 @@ import * as React from "react";
 import Moralis from "moralis";
 import { FundraiserDetailsData } from "../../enums/FundRaiser";
 import { StyledPaper } from "../ui/StyledPaper";
-import Typography from "@mui/material/Typography";
 import { Alert, Skeleton } from "@mui/material";
 import { sameAddress } from "../../utils/FundRaiserUtils";
 import { FundraiserType } from "../../enums/FundRaiserType";
@@ -12,6 +11,7 @@ import { ContentMarkdown } from "../ipfs-content/ContentMarkdown";
 import { ContentImage } from "../ipfs-content/ContentImage";
 import { CreateRecurringDonation } from "../donation/CreateRecurringDonation";
 import { FundraiserWithdrawFunds } from "./FundraiserWithdrawFunds";
+import { PageHeader } from "../ui/PageHeader";
 
 interface FundraiserDetailsProps {
   user: Moralis.User | null;
@@ -32,10 +32,8 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
 
   return (
     <>
+      <PageHeader>{data.name}</PageHeader>
       <StyledPaper>
-        <Typography component="h1" variant="h3" color="text.primary" gutterBottom>
-          {data.name}
-        </Typography>
         {isOwner && <Alert>Looks like this is your fundraiser!</Alert>}
         {data.descriptions?.length > 0 && (
           <>
