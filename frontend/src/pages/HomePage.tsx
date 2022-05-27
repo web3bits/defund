@@ -18,13 +18,13 @@ export const HomePage = () => {
           {isAuthenticated && user ? "WELCOME TO DEFUND" : "DEFUND IS DECENTRALIZED FUNDRAISER"}
         </Box>
       </Typography>
-      <Typography component="p" color="primary.light">
-        <Box sx={{ fontWeight: 500 }}>
+      <Box sx={{ fontWeight: 500 }}>
+        <Typography component="p" color="primary.light">
           {!isAuthenticated &&
             !user &&
             "DeFund is a decentralized platform based on blockchain technology that aims to connect Individuals and Users who needs extra support.!"}
-        </Box>
-      </Typography>
+        </Typography>
+      </Box>
       {isAuthenticated && user && (
         <img src={ethereum} style={{ marginTop: "50px", width: "240px", height: "240px" }} alt="ethereum animation" />
       )}
