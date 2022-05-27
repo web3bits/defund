@@ -50,30 +50,29 @@ export const Layout = () => {
   const router = useLocation();
   const requireAuth = router.pathname !== "/";
   const { isAuthenticated, user } = useMoralis();
-  const { isLoading } = useGlobalContext();
+  const { isLoading, setLoading } = useGlobalContext();
   const classes = useStyles();
 
+
   return (
-    <div className={isAuthenticated && requireAuth ? classes.greyBg : isAuthenticated ? classes.secondaryBg : classes.darkBg}>
+    <div className={isAuthenticated && requireAuth && user ? classes.greyBg : isAuthenticated && user ? classes.secondaryBg : classes.darkBg}>
       <Navigation />
+      {isLoading ?
+        <CircularProgress color="primary" />
+        :
         <div className={isAuthenticated && user ? classes.container : classes.mapContainer}>
-        <Notifications />
-        <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
-          {isLoading ?
-            <CircularProgress color="primary" />
-            :
-            <>
-              { requireAuth && !isAuthenticated && !user ?
-                <RequireAuth>
-                  <Outlet />
-                </RequireAuth>
-                :
+          <Notifications />
+          <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
+            {requireAuth && !isAuthenticated && !user ?
+              <RequireAuth>
                 <Outlet />
-              }
-            </>
-          }
-        </Container>
+              </RequireAuth>
+              :
+              <Outlet />
+            }
+          </Container>
         </div>
+      }
       <Footer />
     </div>
   );
