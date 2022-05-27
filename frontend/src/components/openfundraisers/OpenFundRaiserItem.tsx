@@ -39,7 +39,7 @@ export const OpenFundRaiserItem = memo(({ item }: { item: FundraiserItemInterfac
   return (
     <Grid item xs={12} md={4}>
       <Link to={`/fundraiser/${item.addr}`} style={{ textDecoration: "none" }}>
-        <Card>
+        <Card sx={{ height: 384 }}>
           <CardHeader avatar={<FundraiserStatusBadge status={status} />} title={name} />
           <CardMedia
             component="img"
