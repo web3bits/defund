@@ -42,7 +42,9 @@ export const FundraiserDetails = ({ data, user, refreshFundraiserDetails, isLoad
       <Grid container spacing={2}>
         {isOwner && (
           <Grid item sm={12}>
-            <Alert sx={{ mb: 2 }} severity="info">You are an owner of this fundraiser.</Alert>
+            <Alert sx={{ mb: 2 }} severity="info">
+              You are an owner of this fundraiser.
+            </Alert>
             <AddImage fundraiser={data!} onUploaded={refreshFundraiserDetails} />
           </Grid>
         )}

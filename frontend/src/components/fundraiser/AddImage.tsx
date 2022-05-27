@@ -2,7 +2,7 @@ import Moralis from "moralis";
 import { FundraiserDetailsData } from "../../enums/FundRaiser";
 import { StyledPaper } from "../ui/StyledPaper";
 import { Button, CircularProgress, Typography } from "@mui/material";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useWeb3Storage } from "../../hooks/useWeb3Storage";
 import { NotificationType, useGlobalContext } from "../../context/GlobalContext";
 import * as fundraiserAbi from "../../artifacts/contracts/DeFund.sol/DeFund.json";
