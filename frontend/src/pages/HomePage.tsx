@@ -19,7 +19,7 @@ export const HomePage = () => {
         <Typography component="p" color="primary.light">
           <Box sx={{ fontWeight: 500 }}>{!isAuthenticated && !user && "DeFund is a decentralized platform based on blockchain technology that aims to connect Individuals and Users who needs extra support.!"}</Box>
         </Typography>
-        {isAuthenticated && user && <img src={ethereum} style={{ marginTop: "50px", width: "240px", height: "240px" }} alt="eth icon" />}
+        {isAuthenticated && user && <img src={ethereum} style={{ marginTop: "50px", width: "240px", height: "240px" }} alt="ethereum animation" />}
       </Container>
   );
 };
