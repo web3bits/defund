@@ -1,4 +1,8 @@
-import { Button, CircularProgress, Popover, Box, Modal } from "@mui/material";
+import { Button, CircularProgress, Popover, Box, Modal, Avatar, Menu, MenuItem, ListItemIcon, Divider, IconButton, Tooltip, Typography } from "@mui/material";
+import { Logout } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { createStyles, makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { useChain, useMoralis } from "react-moralis";
@@ -7,26 +11,18 @@ import { NotificationType, useGlobalContext } from "../../context/GlobalContext"
 import { ALLOWED_NETWORK } from "./RequireAuth";
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
-import Moralis from "moralis";
+import ethereum from '../../images/ethereum.svg';
 
 export const UserInfo = () => {
 
-  // const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
-  // const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handleClose = () => {
-  //   setAnchorEl(null);
-  // };
-
-  // const open = Boolean(anchorEl);
-  // const id = open ? 'simple-popover' : undefined;
-
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const {
     authenticate,
@@ -39,6 +35,7 @@ export const UserInfo = () => {
     hasAuthError,
     isWeb3Enabled,
   } = useMoralis();
+
   const { chainId, switchNetwork } = useChain();
   const { addNotification, ethBalance } = useGlobalContext();
   const [isWrongNetwork, setWrongNetwork] = useState(false);
@@ -64,8 +61,9 @@ export const UserInfo = () => {
   const useStyles = makeStyles(() =>
     createStyles({
       avatar: {
-        height: "30px",
-        marginRight: "1rem",
+        height: "32px",
+        width: "32px",
+        borderRadius: "47px",
       },
       account: {
         border: "1px solid #fff",
@@ -74,22 +72,7 @@ export const UserInfo = () => {
         height: "30px",
         alignItems: "center",
         padding: "5px",
-      },
-      modal: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        height: 400,
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        p: 4,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "centre",
-        justifyContent: "center",
-      },
+      }
     })
   );
 
@@ -154,51 +137,100 @@ export const UserInfo = () => {
       </div>
     );
   }
-
-  // const style = {
-  //   position: 'absolute' as 'absolute',
-  //   top: '50%',
-  //   left: '50%',
-  //   transform: 'translate(-50%, -50%)',
-  //   width: 400,
-  //   bgcolor: 'background.paper',
-  //   border: '2px solid #000',
-  //   boxShadow: 24,
-  //   p: 4,
-  // };
-
   
   return (
     <>
       {isAuthenticated && user ? (
         <>
-          {/* <Button variant="outlined"> */}
-          <div className={classes.account}>
-            <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />
-            <Link component={RouterLink} to="/account" mr="15px" sx={{ color: isAuthenticated && "primary.light", textDecoration: "none" }}>
-              Account
-            </Link>
-          </div>
-          {/* </Button> */}
-          <div onClick={handleOpen}>
-            ☰
-          </div>
-          <Modal
+          <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+            <Tooltip title="My Account">
+              <IconButton
+                onClick={handleClick}
+                size="small"
+                sx={{ ml: 2 }}
+                aria-controls={open ? 'account-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+              >
+                <img className={classes.avatar} src={makeBlockie(user.get("ethAddress"))} alt={user.get("ethAddress")} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Menu
+            anchorEl={anchorEl}
+            id="account-menu"
             open={open}
             onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+            onClick={handleClose}
+            PaperProps={{
+              elevation: 0,
+              sx: {
+                overflow: 'visible',
+                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                mt: 1.5,
+                '& .MuiAvatar-root': {
+                  width: 32,
+                  height: 32,
+                  ml: -0.5,
+                  mr: 1,
+                },
+                '&:before': {
+                  content: '""',
+                  display: 'block',
+                  position: 'absolute',
+                  top: 0,
+                  right: 14,
+                  width: 10,
+                  height: 10,
+                  bgcolor: 'background.paper',
+                  transform: 'translateY(-50%) rotate(45deg)',
+                  zIndex: 0,
+                },
+              },
+            }}
+            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <div className={classes.modal}>
-              <Link component={RouterLink} to="/account" sx={{ color: isAuthenticated && "primary.light", textDecoration: "none" }}>
-                {user.get("username")}
+            <MenuItem>
+              <ListItemIcon>
+                <img src={ethereum} style={{width: "24px", height: "24px"}} alt="eth icon" />
+              </ListItemIcon>
+              <Typography variant="body2" gutterBottom>Welcome In DeFund.</Typography>
+            </MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <AccountCircleIcon fontSize="small" />
+              </ListItemIcon>
+              <Link component={RouterLink} to="/account" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
+                My Account
               </Link>
-              <button onClick={logoutHandler} className={btnClasses.darkBg + " " + btnClasses.root}>
-                LOGOUT
-              </button>
-            </div>
-          </Modal>
-          
+            </MenuItem>
+            <Divider />
+            <MenuItem>
+              <ListItemIcon>
+                <AddIcon fontSize="small" />
+              </ListItemIcon>
+              <Link component={RouterLink} to="/create" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
+                Create a Fundraiser
+              </Link>
+            </MenuItem>
+            <MenuItem>
+              <ListItemIcon>
+                <AutorenewIcon fontSize="small" />
+              </ListItemIcon>
+              <Link component={RouterLink} to="/fundraisers" mr="15px" sx={{ textDecoration: "none", color: "#000" }}>
+                Active Fundraiser
+              </Link>
+            </MenuItem>
+            <MenuItem
+              onClick={logoutHandler}
+            >
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
+              Logout
+            </MenuItem>
+          </Menu>
         </>
       ) : (
         <button onClick={loginHandler} className={btnClasses.lightBg + " " + btnClasses.root}>

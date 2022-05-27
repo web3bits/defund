@@ -36,7 +36,7 @@ export const Navigation = () => {
   const { isAuthenticated } = useMoralis();
 
   return (
-    <AppBar position="static" color={isAuthenticated ? "secondary" : "primary"} elevation={0}>
+    <AppBar position="static" style={{ marginBottom: 70 }} color="primary" elevation={isAuthenticated ? 2 : 0}>
       <Toolbar>
         <nav className={classes.root}>
           <Link component={RouterLink} variant="h5" to="/" sx={{ flexGrow: 1, marginRight: "auto", textDecoration: 'none', fontWeight: 'bold', maxWidth: "80px", "&:hover": { color: 'primary.light' }, color: !isAuthenticated ? 'secondary.main': 'primary.light' }}>

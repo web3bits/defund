@@ -1,6 +1,6 @@
 import React from "react";
 import { createStyles, makeStyles } from "@mui/styles";
-import { Grid } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import Moralis from "moralis";
 import { MoralisContextValue } from "react-moralis";
 import { StyledPaper } from "../ui/StyledPaper";
@@ -22,7 +22,7 @@ export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDe
         textAlign: "right",
       },
       payments: {
-        textAlign: "center",
+        textAlign: "center"
       },
     })
   );
@@ -65,8 +65,8 @@ export const AccountDetails = ({ user, chainId, network, ethBalance }: AccountDe
         </Grid>
 
         <Grid item xs={12} className={classes.payments}>
-          <Link color="secondary" component={RouterLink} to="/recurring">
-            My recurring payments
+          <Link sx={{textDecoration: "none"}} component={RouterLink} to="/recurring">
+            <Button color="secondary" variant="contained">My recurring payments</Button>
           </Link>
         </Grid>
       </Grid>

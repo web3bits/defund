@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { Footer } from "./Footer";
-import { Backdrop, CircularProgress, Container } from "@mui/material";
+import { CircularProgress, Container } from "@mui/material";
 import { useGlobalContext } from "../../context/GlobalContext";
 import { Notifications } from "./Notifications";
 import { useMoralis } from "react-moralis";
@@ -9,16 +9,7 @@ import { makeStyles } from '@mui/styles';
 import { RequireAuth } from "./RequireAuth";
 import { useLocation } from "react-router-dom";
 import Image from '../../images/shokunin_World_Map.svg'; // Import using relative path
-import { keyframes } from '@mui/system';
 
-const spin = keyframes`
-  0% {
-    transform: translate3d(0, 0, 0);
-  }
-  100% {
-    transform: translate3d(-1692px, 0, 0);
-  }
-`;
 const useStyles: any = makeStyles((theme: any) => ({
   root: {
     maxWidth: "1200px",
@@ -26,31 +17,22 @@ const useStyles: any = makeStyles((theme: any) => ({
   darkBg: {
     background: theme.palette.primary.main,
   },
-  // lightBg: {
-  //   background: theme.palette.primary.light,
-  // },
   secondaryBg: {
-    background: theme.palette.secondary.main,
+    background: theme.palette.secondary.light,
+  },
+  greyBg: {
+    background: "#e4e4e4"
   },
   "@keyframes animate": {
-    // "0%": {
-    //   backgroundPosition: "0 0"
-    // },
     "100%": {
-      // backgroundPosition: "-10000px 0"
       backgroundPosition: "-3000px 0"
     }
   },
   mapContainer: {
-    // position: "absolute",
-    // top: "0",
-    // left: "0",
     backgroundImage: `url(${Image})`,
     minHeight: 'calc(100vh - 130px)',
     width: '100%',
-    // backgroundPosition: 'center',
     backgroundRepeat: 'repeat',
-    // backgroundSize: 'cover',
     backgroundPosition: "0 0",
     backgroundSize: "auto 100%",
     margin: '0 auto',
@@ -63,47 +45,35 @@ const useStyles: any = makeStyles((theme: any) => ({
   }
 }));
 
-// const useStyles: any = makeStyles({
-//   root: {
-//     background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-//     border: 0,
-//     borderRadius: 3,
-//     boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-//     color: 'white',
-//     height: 48,
-//     padding: '0 30px',
-//   },
-// });
-
 export const Layout = () => {
 
   const router = useLocation();
   const requireAuth = router.pathname !== "/";
-  const { isAuthenticated } = useMoralis();
+  const { isAuthenticated, user } = useMoralis();
   const { isLoading } = useGlobalContext();
   const classes = useStyles();
 
   return (
-    // <div className={isAuthenticated ? classes.lightBg : classes.darkBg}>
-    <div className={isAuthenticated ? classes.secondaryBg : classes.darkBg}>
+    <div className={isAuthenticated && requireAuth ? classes.greyBg : isAuthenticated ? classes.secondaryBg : classes.darkBg}>
       <Navigation />
-      <div className={!isAuthenticated ? classes.mapContainer : classes.container}>
-        <Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
+        <div className={isAuthenticated && user ? classes.container : classes.mapContainer}>
         <Notifications />
-        {requireAuth ?
-          <RequireAuth>
-            <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
-              <Outlet />
-            </Container>
-          </RequireAuth>
-          :
-          <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
-            <Outlet />
-          </Container>
-        }
-      </div>
+        <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0 }}>
+          {isLoading ?
+            <CircularProgress color="primary" />
+            :
+            <>
+              { requireAuth && !isAuthenticated && !user ?
+                <RequireAuth>
+                  <Outlet />
+                </RequireAuth>
+                :
+                <Outlet />
+              }
+            </>
+          }
+        </Container>
+        </div>
       <Footer />
     </div>
   );

@@ -3,6 +3,7 @@ import { FundRaiserStatus } from "../../enums/FundRaiserStatus";
 import { FundraiserType } from "../../enums/FundRaiserType";
 import { OpenFundRaiser } from "./OpenFundRaiserInterface";
 import { OpenFundRaiserItem } from "./OpenFundRaiserItem";
+import { CircularProgress, Container } from "@mui/material";
 
 interface OpenFundRaiserListInterface {
   list: OpenFundRaiser[];
@@ -44,20 +45,26 @@ const useOpenFundRaisersList = (): OpenFundRaiserListInterface => {
 };
 
 export const OpenFundRaisersList = (): JSX.Element => {
+
   const { list, loading } = useOpenFundRaisersList();
-  if (loading) {
-    return <span>Loading...</span>;
-  }
 
   if (!Array.isArray(list) || list.length === 0) {
     return <h1>There are no open fundraisers</h1>;
   }
 
   return (
-    <>
-      {list.map((fundRaiserItem: OpenFundRaiser) => (
-        <OpenFundRaiserItem key={fundRaiserItem._id} item={fundRaiserItem} />
-      ))}
-    </>
+    // <Container disableGutters maxWidth="lg" component="main" sx={{ py: 0, margin: "0 auto" }}>
+    //   {!loading ?
+    //     <CircularProgress color="primary" />
+    //     :
+        <>
+          {
+            list.map((fundRaiserItem: OpenFundRaiser) => (
+              <OpenFundRaiserItem key={fundRaiserItem._id} item={fundRaiserItem} />
+            ))
+            }
+        </>
+    //   }
+    // </Container>
   );
 };

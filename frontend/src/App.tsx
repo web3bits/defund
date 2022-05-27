@@ -5,7 +5,6 @@ import { Layout } from "./components/ui/Layout";
 import { HomePage } from "./pages/HomePage";
 import { Error404 } from "./pages/Error404";
 import { CreateFundraiserPage } from "./pages/CreateFundraiserPage";
-import { RequireAuth } from "./components/ui/RequireAuth";
 import { OpenFundRaisersPage } from "./pages/OpendFundraisersPage";
 import { AccountPage } from "./pages/AccountPage";
 import { FundraiserDetailsPage } from "./pages/FundraiserDetailsPage";
@@ -23,8 +22,8 @@ export default function App() {
           <Route path="/fundraiser/:address" element={<FundraiserDetailsPage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/recurring" element={<MyRecurringPaymentsPage />} />
+          <Route path="*" element={<Error404 />} />
         </Route>
-        <Route path="*" element={<Error404 />} />
       </Routes>
     </GlobalContextProvider>
   );
